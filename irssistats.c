@@ -928,7 +928,7 @@ void day_changed(char* date)
         for (j=0;j<4;j++) lastweeks[0].hours[j]=0;
       }
       /* if the month has changed */
-      if (currdate.tm_mon != currmon && currmon > 0)
+      if (currdate.tm_mon != currmon && currmon >= 0)
       {
         for (i=30;i>0;i--)
         {
