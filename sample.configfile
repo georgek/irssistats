@@ -1,0 +1,114 @@
+# This is the configuration file for irssistats.
+# The path to this file can be given on the command line : irssistats /path/to/irssistats.conf
+# If no configuration file is given, irssistats looks for files ~/.irssistats.conf or then /etc/irssistats.conf
+# Lines starting by ; # -- or // are ignored (comments).
+# This file is read sequencially, so it acts like a script.
+# Each option keyword is case sensitive, and you must put separators around the ':' character.
+# Blank lines must not contain any spaces !
+# Each option keeps its value until erased by another value.
+# IMPORTANT : the order of options to parse a channel must allways be "input" THEN "nickfile" THEN "photofile" THEN "output".
+
+# Allows you to display debugging informations.
+# Values : normal / verbose / none
+# Default : normal
+debug : verbose
+
+# Specifies the name of the channel you are parsing.
+channel : #zerezo
+
+# Nickname of the person generating the statistics (you !).
+maintainer : royale
+
+# Language you want to use to display the statistics
+# Values : fr en de du es it fi ru et
+# Default : en
+language : fr
+
+# Theme (colors) to use for the statistics, separated by comas
+# In fact this is the name of the CSS file to include.
+# This option has no effect if you use a custom header : you'll have to include the CSS yourself.
+# The first theme is the primary stylesheet, and the others are alternate themes
+theme : default,biseau,blue,dark,damier,grayscale,namour,niflheim,pisg,zeduel,zerezo
+
+# Allows you to disable top words list which is using a lot of memory
+# Default : yes
+top_words : yes
+
+# Specifies which ranking method to use
+# Values : lines / words / letters
+# Default : lines
+ranking : lines
+
+# Display quarters in top hours (smoother graphs)
+# Default : no
+quarter : yes
+
+# Display last weeks statistics
+# Default : no
+weeks : yes
+
+# Display last months statistics
+# Default : no
+months : yes
+
+# Specifies the refresh time in seconds (0 to disable)
+# This option has no effect if you use a custom header : you'll have to include the refresh code yourself.
+# Default : 3600
+refresh_time : 0
+
+# Specifies the size in pixels of the thumbnails for users
+# This option has an effect only if there is a photofile (see below)
+# Set to 0 to disable (display pictures with their real size)
+# Default : 60
+photo_size : 0
+
+# Set this to "no" if you don't want the W3C logo.
+# Default : yes
+w3c_link : no
+
+# Set this to "no" if you don't want the irssistats logo.
+# Default : yes
+logo : no
+
+# Use your custom header file (HTML code between <!DOCTYPE... and <body> included)
+header : /path/to/header.html
+
+# Use your custom footer file (HTML code between </body> and </html> included)
+footer : /path/to/footer.html
+
+# This allow you to parse a file.
+# Note that irssistats will really parse the file as soon as it reads this option.
+input : /path/to/#channel1.log
+
+# Let's parse another log.
+# Note that this will merge "#channel and "#channel2" statistics...
+# This is usefull if you splitted your channel file
+input : /path/to/#newchannel1.log
+
+# This allow you to group nick using a nickfile.
+# Note that irssistats will really merge the nicks as soon as it reads this option.
+nickfile : /path/to/nickfile1.txt
+
+# This allow you to display pictures for users.
+photofile: /path/to/photofile1.txt
+
+# This allow you to generate the HTML file.
+# Note that irssistats will really generate the HTML file as soon as it reads this option.
+output : /path/to/channel1.html
+
+# Change some options
+language : en
+debug : none
+
+# Do not use custom header and footer anymore
+header : none
+footer : none
+
+# Another chan without nickfile
+input : /path/to/#channel2.log
+output : /path/to/channel2.html
+
+# Another chan with nickfile
+input : /path/to/#channel3.log
+nickfile : /path/to/nickfile3.txt
+output : /path/to/channel3.html

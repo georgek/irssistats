@@ -1,0 +1,119 @@
+Change log file for irssistats
+
+version 0.75	(2007-11-10)
+	* generate better/longer quotes when possible (patch by Nikolai Weh)
+
+version 0.74	(2007-09-20)
+	* added CFLAGS to Makefile (patch by VMiklos)
+	* added '&' and '~' to list of nick prefix (patch by VMiklos)
+
+version 0.73	(2007-05-20)
+	* added last weeks and last months options (suggested by Gouki)
+	* fixed theme option when generating output
+	* also reset last days statistics when generating output
+	* fix german translation (reported by Nico)
+	* close the last div when using custom footer
+
+version 0.72	(2006-03-25)
+	* now supports statistics of russian words (patch by Pavel N.Kovalenko)
+	* parsing more relaxed for modified log formats (patch by Micha Nelissen)
+	* check day changes with multiple log files (patch by Micha Nelissen)
+
+version 0.71	(2005-02-07)
+	* back to a basic Makefile for clean packinging purposes
+
+version 0.70	(2005-02-06)
+	* Makefile was improved to easily build packages
+	* Windows binaries are now available
+	* patch to make parsing more robust and dutch translation updated (thank you Wouter Horré)
+	* added an option to display pictures for the users
+	* added the irssistats logo with an option to hide it
+	* expand the "~" character in configuration file to the home directory
+	* added 3 themes : biseau, damier and niflheim
+	* gcc optimization to speed up irssistats
+
+version 0.62	(2004-05-03)
+	* estonian support (thank you Martin Vool)
+
+version 0.61	(2004-04-05)
+	* russian support (thank you kamikaze)
+	* manpage was rewritten in SGML, updated and restored
+
+version 0.6	(2004-03-21)
+	* no hard user limit anymore (dynamic table size)
+	* alternate CSS themes
+	* quarters support in top hours statistics
+	* words/letters ranking
+	* top words can be disabled to use less memory
+	* old polish translation was restored
+
+version 0.51	(2003-12-14)
+	* bugfixes and polish language updated (thank you Jakub Jankowski) 
+	* "CHARSET" is now a language parameter 
+	* Internet Explorer specific bugfix in themes 
+
+version 0.5	(2003-12-07)
+	* configuration file 
+	* it is now possible to build multiple stats in one run 
+	* customizable header and footer 
+	* now produces XHTML with CSS templates as suggested by some users 
+	* "grayscale" and "pisg" theme were added 
+	* italian support (thank you Coviello Giuseppe) 
+	* dutch support and BSD include patch (thank you Jeroen Ubbink) 
+	* patch nickmode (thank you Philipp Haegi) 
+
+version 0.44	(2003-05-25)
+	* finnish support (thank you Antti Huopana) 
+	* minor updates 
+
+version 0.43	(2002-11-24)
+	* manpage was added 
+	* increased number of users 
+	* "blue" theme was added 
+	* improved Makefile 
+
+version 0.42	(2002-11-16)
+	* W3C validated HTML 
+	* better quote selection during nick alias 
+	* auto refresh (suggested by Charles Blackburn) 
+
+version 0.41	(2002-10-19)
+	* polish support (thank you Piotr Jarmuz) 
+	* you can now ignore some users 
+	* improved Makefile 
+	* the # in channel name is not imposed anymore (to support "&channels") 
+	* number of total days are now displayed 
+
+version 0.4	(2002-10-14)
+	* nick alias support using regular expression 
+	* some code fix 
+
+version 0.32	(2002-09-30)
+	* german support (thank you Valentin Gelhorn) 
+
+version 0.31	(2002-09-01)
+	* spanish support (thank you Alex) 
+	* minor code changes 
+	* bugfix : division by 0 (thank you Qball) 
+	* better random topics / urls algorithm 
+
+version 0.3	(2002-05-29)
+	* top users by time of day 
+	* some big numbers 
+	* some new themes 
+	* increased number of users 
+	* better HTML output 
+
+version 0.2	(2002-05-16)
+	* languages support (currently english and french) 
+	* themes support 
+	* most used words 
+	* now handles personal messages and "/me" 
+	* parameters on command line 
+	* some code change 
+	* faster 
+	* no more image when 0 lines 
+	* maximum height for graph is now calculated 
+
+version 0.1	(2002-05-01)
+	* initial release

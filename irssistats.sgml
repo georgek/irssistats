@@ -1,0 +1,332 @@
+<!doctype refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
+  <!-- Fill in your name for FIRSTNAME and SURNAME. -->
+  <!ENTITY dhfirstname "<firstname>JACQUET</firstname>">
+  <!ENTITY dhsurname   "<surname>ANTOINE</surname>">
+  <!-- Please adjust the date whenever revising the manpage. -->
+  <!ENTITY dhdate      "<date>april 4, 2004</date>">
+  <!-- SECTION should be 1-8, maybe w/ subsection other parameters are
+       allowed: see man(7), man(1). -->
+  <!ENTITY dhsection   "<manvolnum>1</manvolnum>">
+  <!ENTITY dhemail     "<email>royale@zerezo.com</email>">
+  <!ENTITY dhusername  "Antoine Jacquet">
+  <!ENTITY dhucpackage "<refentrytitle>IRSSISTATS</refentrytitle>">
+  <!ENTITY dhpackage   "irssistats">
+
+  <!ENTITY debian      "<productname>Debian</productname>">
+  <!ENTITY gnu         "<acronym>GNU</acronym>">
+  <!ENTITY gpl         "&gnu; <acronym>GPL</acronym>">
+]>
+
+<refentry>
+
+  <refentryinfo>
+    <address>
+      &dhemail;
+    </address>
+    <author>
+      &dhfirstname;
+      &dhsurname;
+    </author>
+    <copyright>
+      <year>2004</year>
+      <holder>&dhusername;</holder>
+    </copyright>
+    &dhdate;
+  </refentryinfo>
+  
+  <refmeta>
+    &dhucpackage;
+    &dhsection;
+  </refmeta>
+  
+  <refnamediv>
+    <refname>&dhpackage;</refname>
+    <refpurpose>A tool to generate HTML IRC stats based on irssi logs.</refpurpose>
+  </refnamediv>
+  
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <arg><option><replaceable>/path/to/file.conf</replaceable></option></arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+  
+  <refsect1>
+    <title>DESCRIPTION</title>
+    <para><command>irssistats</command> is a tool that make HTML stats from <command>irssi</command> logfiles.</para>
+    <para>The statistics generated display many useful and funny informations about the channel.</para>
+  </refsect1>
+  
+  <refsect1>
+    <title>USING IT</title>
+    <para>First you need to copy the files needed for the HTML page :</para>
+    <para><command>cp /usr/share/irssistats/data/* /path/to/webdir/</command></para>
+    <para>Then you must edit a configuration file : "/etc/irssistats.conf", "~/.irssistats", or another file given as a parameter.</para>
+    <para>Now you can generate the statistics for your channel :</para>
+    <para><command>irssistats <option><replaceable>[/path/to/file.conf]</replaceable></option></command></para>
+    <para>The logfiles for <command>irssi</command> are usually located in "~/irclogs/network/channel.log"</para>
+  </refsect1>
+  
+  
+  <refsect1>
+    <title>CONFIGURATION FILE</title>
+    <para>Please look at the sample configuration file in "/usr/share/docs/irssistats/sample.configfile" for an example.</para>
+    <para>The path to the configuration file can be given on the command line : <command>irssistats</command> <replaceable>/path/to/irssistats.conf</replaceable></para>
+    <para>If no configuration file is given, irssistats looks for files ~/.irssistats.conf or then /etc/irssistats.conf</para>
+    <para>Lines starting by ; # -- or // are ignored (comments).</para>
+    <para>This file is read sequencially, so it acts like a script.</para>
+    <para>Each option keyword is case sensitive, and you must put separators around the ':' character.</para>
+    <para>Blank lines must not contain any spaces !</para>
+    <para>Each option keeps its value until erased by another value.</para>
+    <para>IMPORTANT : the order of options to parse a channel must allways be "input" THEN "nickfile" THEN "photofile" THEN "output".</para>
+    
+    <para>Available options are :</para>
+    
+    <variablelist>
+      
+      <varlistentry>
+        <term>debug</term>
+        <listitem>
+          <para>Allows you to display debugging informations.</para>
+          <para>Values : normal / verbose / none</para>
+          <para>Default : normal</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>channel</term>
+        <listitem><para>Specifies the name of the channel you are parsing.</para></listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>maintainer</term>
+        <listitem><para>Nickname of the person generating the statistics (you !).</para></listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>language</term>
+        <listitem>
+          <para>Language you want to use to display the statistics</para>
+          <para>Values : fr en de du es it fi ru et</para>
+          <para>Default : en</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>theme</term>
+        <listitem>
+          <para>Theme (colors) to use for the statistics, separated by comas</para>
+          <para>In fact this is the name of the CSS file to include.</para>
+          <para>This option has no effect if you use a custom header : you'll have to include the CSS yourself.</para>
+          <para>The first theme is the primary stylesheet, and the others are alternate themes</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>top_words</term>
+        <listitem>
+          <para>Allows you to disable top words list which is using a lot of memory</para>
+          <para>Default : yes</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>ranking</term>
+        <listitem>
+          <para>Specifies which ranking method to use</para>
+          <para>Values : lines / words / letters</para>
+          <para>Default : lines</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>quarter</term>
+        <listitem>
+          <para>Display quarters in top hours (smoother graphs)</para>
+          <para>Default : no</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>weeks</term>
+        <listitem>
+          <para>Display last week statistics</para>
+          <para>Default : no</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>months</term>
+        <listitem>
+          <para>Display last months statistics</para>
+          <para>Default : no</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>refresh_time</term>
+        <listitem>
+          <para>Specifies the refresh time in seconds (0 to disable)</para>
+          <para>This option has no effect if you use a custom header : you'll have to include the refresh code yourself.</para>
+          <para>Default : 3600</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>photo_size</term>
+        <listitem>
+          <para>Specifies the size in pixels of the thumbnails for users</para>
+          <para>This option has an effect only if there is a photofile (see below)</para>
+          <para>Set to 0 to disable (display pictures with their real size)</para>
+          <para>Default : 60</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>w3c_link</term>
+        <listitem>
+          <para>Set this to "no" if you don't want the W3C logo.</para>
+          <para>Default : yes</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>logo</term>
+        <listitem>
+          <para>Set this to "no" if you don't want the irssistats logo.</para>
+          <para>Default : yes</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>header</term>
+        <listitem><para>Use your custom header file (HTML code between &lt;!DOCTYPE... and &lt;body&gt; included)</para></listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>footer</term>
+        <listitem><para>Use your custom footer file (HTML code between &lt;/body&gt; and &lt;/html&gt; included)</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>input</term>
+        <listitem>
+          <para>This allow you to parse a file.</para>
+          <para>Note that irssistats will really parse the file as soon as it reads this option.</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>nickfile</term>
+        <listitem>
+          <para>This allow you to group nick using a nickfile.</para>
+          <para>Note that irssistats will really merge the nicks as soon as it reads this option.</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>photofile</term>
+        <listitem>
+          <para>This allow you to display pictures for users.</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>output</term>
+        <listitem>
+          <para>This allow you to generate the HTML file.</para>
+          <para>Note that irssistats will really generate the HTML file as soon as it reads this option.</para>
+        </listitem>
+      </varlistentry>
+      
+    </variablelist>
+    
+  </refsect1>
+  
+  
+  <refsect1>
+    <title>NICKFILE</title>
+    <para>Since version 0.4 of <command>irssistats</command>, you can use a nickfile to specify nicks to join.</para>
+    <para>Each line of the nickfile contains the final nick and a regular expression.</para>
+    <para>Examples :</para>
+    <variablelist>
+      <varlistentry>
+        <term>royale &circ;[Rr]oyale</term>
+        <listitem><para>join nicks starting with "Royale" or "royale" to the final nick "royale"</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>royale &circ;antoine$</term>
+        <listitem><para>also join the nick "antoine" to the final nick "royale"</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>djakette [Dd]ja</term>
+        <listitem><para>join any nick that contains "Dja" or "dja" to final nick "djakette"</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>&lt;NULL&gt; &circ;bot\|royale$</term>
+        <listitem><para>remove "bot|royale" from statistics</para></listitem>
+      </varlistentry>
+    </variablelist>
+    <para>The nickfile must not contain any comments.</para>
+    <para>The &lt;NULL&gt; final nick will remove matching nicks from all statistics, except from "Some URLs" and "Some topics"...</para>
+    <para>You can also take a look at the "sample.nickfile" in this package (in "/usr/share/doc/irssistats/").</para>
+  </refsect1>
+  
+  
+  <refsect1>
+    <title>PHOTOFILE</title>
+    <para>Since version 0.70 of <command>irssistats</command>, you can use a photofile to display pictures for users.</para>
+    <para>Each line of the photofile contains the final nick and an URL for the image.</para>
+    <para>Examples :</para>
+    <variablelist>
+      <varlistentry>
+        <term>royale http://royale.zerezo.com/chat/faces/happy40.png</term>
+        <listitem><para>(a full address)</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>sektor ../chat/faces/happy40.png</term>
+        <listitem><para>(a relative address)</para></listitem>
+      </varlistentry>
+    </variablelist>
+    <para>The photofile must not contain any comments.</para>
+    <para>You can also take a look at the "sample.photofile" in this package (in "/usr/share/doc/irssistats/").</para>
+  </refsect1>
+  
+  
+  <refsect1>
+    <title>SEE ALSO</title>
+    <para><command>irssi</command> (1).</para>
+  </refsect1>
+  
+  <refsect1>
+    <title>INFORMATIONS</title>
+    <para>You can find informations and updates of <command>irssistats</command> at <ulink url="http://royale.zerezo.com/irssistats/">http://royale.zerezo.com/irssistats/</ulink>.</para>
+    <para>Report bugs to &dhemail;.</para>
+  </refsect1>
+
+  <refsect1>
+    <title>AUTHOR</title>
+    <para>Antoine Jacquet &dhemail;</para>
+  </refsect1>
+
+</refentry>
+
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+sgml-omittag:t
+sgml-shorttag:t
+sgml-minimize-attributes:nil
+sgml-always-quote-attributes:t
+sgml-indent-step:2
+sgml-indent-data:t
+sgml-parent-document:nil
+sgml-default-dtd-file:nil
+sgml-exposed-tags:nil
+sgml-local-catalogs:nil
+sgml-local-ecat-files:nil
+End:
+-->
+
+

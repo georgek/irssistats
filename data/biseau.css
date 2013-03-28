@@ -1,0 +1,137 @@
+/* "biseau" theme from Pronostiks.com */
+
+body {
+  background: #ddddee;
+  text-align: center;
+}
+
+#irssistats * {
+  font-family: tahoma;
+  font-size: 9pt;
+}
+
+#irssistats {
+  width: 89%;
+  margin: auto;
+}
+
+#irssistats h1, #irssistats h2 {
+  font-weight: bold;
+  padding-left: 5px;
+  margin: 0;
+}
+
+#irssistats h1 {
+  color: #6b78a4;
+  font-size: 18pt;
+}
+
+#irssistats h2 {
+  color: #ffffff;
+  font-size: 10pt;
+  height: 18px;
+  background: #6b78a4 url('biseau_corner1.gif');
+  background-repeat: no-repeat;
+  background-position: top right;
+  padding-right: 8px;
+}
+
+#irssistats_legend td {
+  text-align: left;
+}
+
+#irssistats_legend, #irssistats_lastdays, #irssistats_lastweeks, #irssistats_lastmonths, #irssistats_tophours, #irssistats_topusers, #irssistats_topuserstime, #irssistats_randtopics, #irssistats_randurls, #irssistats_topwords, #irssistats_bignumbers {
+  background: #ffffff;
+  margin: 10px;
+  text-align: center;
+  border-bottom: 2px #6b78a4 solid;
+}
+
+#irssistats table {
+  width: 100%;
+  border-left: 6px #6b78a4 double;
+  border-right: 2px #6b78a4 solid;
+  margin: 0;
+  padding: 15px;
+}
+
+#irssistats_topusers td, #irssistats_topuserstime td, #irssistats_randtopics td, #irssistats_randurls td, #irssistats_topwords td, #irssistats_bignumbers td {
+  border: 1px #6b78a4 solid;
+  text-align: center;
+}
+
+#irssistats th {
+  height: 18px;
+  background: #ddddee url('biseau_corner4.gif');
+  background-repeat: no-repeat;
+  background-position: top right;
+  padding-right: 8px;
+  border: 0;
+}
+
+#irssistats_legend p, #irssistats_lastdays p, #irssistats_lastweeks p, #irssistats_lastmonths p, #irssistats_tophours p, #irssistats_topusers p, #irssistats_topuserstime p, #irssistats_randtopics p, #irssistats_randurls p, #irssistats_topwords p, #irssistats_bignumbers p {
+  border-left: 6px #6b78a4 double;
+  border-right: 2px #6b78a4 solid;
+  margin: 0;
+  padding: 15px;
+}
+
+#irssistats div.h1, #irssistats div.h2, #irssistats div.h3, #irssistats div.h4, #irssistats div.hm {
+  float: left;
+  height: 15px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 0;
+}
+
+#irssistats div.v1, #irssistats div.v2, #irssistats div.v3, #irssistats div.v4, #irssistats div.vm {
+  width: 15px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 0;
+}
+
+#irssistats div.h1, #irssistats div.v1 {
+  background: #6b78a4;
+}
+
+#irssistats div.h2, #irssistats div.v2 {
+  background: #8899cc;
+}
+
+#irssistats div.h3, #irssistats div.v3 {
+  background: #aabbdd;
+}
+
+#irssistats div.h4, #irssistats div.v4 {
+  background: #ddddee;
+}
+
+#irssistats div.hm, #irssistats div.vm {
+  background: #888888 url('biseau_corner4.gif');
+  background-repeat: no-repeat;
+  background-position: top right;
+}
+
+#irssistats A {
+  color: #5a658a;
+  text-decoration: none;
+}
+
+#irssistats A:hover {
+  text-decoration: underline;
+}
+
+#irssistats img {
+  border: 0;
+}
+
+#irssistats small {
+  font-size: 7pt;
+}
+
+#irssistats .tdphoto {
+  text-align: center;
+}

@@ -1,0 +1,138 @@
+/* "damier" theme from Pronostiks.com */
+
+body {
+  background: url('damier_background.gif');
+  text-align: center;
+}
+
+#irssistats * {
+  font-family: verdana;
+  font-size: 9pt;
+}
+
+#irssistats {
+  width: 860px;
+  margin: auto;
+}
+
+#irssistats h1 {
+  font-size: 20pt;
+}
+
+#irssistats h2 {
+  font-weight: bold;
+  background: url('damier_title.png');
+  background-repeat: no-repeat;
+  border-bottom: 1px black solid;
+  padding-left: 5px;
+  margin: 0;
+}
+
+#irssistats_legend td {
+  text-align: left;
+}
+
+#irssistats_legend, #irssistats_lastdays, #irssistats_lastweeks, #irssistats_lastmonths, #irssistats_tophours, #irssistats_topusers, #irssistats_topuserstime, #irssistats_randtopics, #irssistats_randurls, #irssistats_topwords, #irssistats_bignumbers {
+  background: #ffffff;
+  border: 1px black solid;
+  -moz-border-radius-topright: 20px;
+  -moz-border-radius-bottomleft: 20px;
+  -moz-border-radius-bottomright: 20px;
+  margin-bottom: 20px;
+}
+
+#irssistats A {
+  color: #a35800;
+  text-decoration: none;
+}
+
+#irssistats A:hover {
+  text-decoration: underline;
+}
+
+.box_content {
+  padding: 10px;
+  text-align: center;
+}
+
+#irssistats table {
+  width: 800px;
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#irssistats_topusers td, #irssistats_topuserstime td, #irssistats_randtopics td, #irssistats_randurls td, #irssistats_topwords td, #irssistats_bignumbers td {
+  border: 1px #aaaaaa solid;
+  text-align: center;
+  -moz-border-radius: 4px;
+}
+
+#irssistats th {
+  border: 1px black solid;
+  background: url('damier_title.png');
+  background-repeat: no-repeat;
+}
+
+#irssistats img {
+  border: 0;
+}
+
+#irssistats div.h1, #irssistats div.h2, #irssistats div.h3, #irssistats div.h4, #irssistats div.hm {
+  float: left;
+  height: 15px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 0;
+}
+
+#irssistats div.v1, #irssistats div.v2, #irssistats div.v3, #irssistats div.v4, #irssistats div.vm {
+  width: 15px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 0;
+}
+
+#irssistats div.h1, #irssistats div.v1 {
+  background: #fbc282;
+}
+
+#irssistats div.h2, #irssistats div.v2 {
+  background: #fbcf9b;
+}
+
+#irssistats div.h3, #irssistats div.v3 {
+  background: #fddbb3;
+}
+
+#irssistats div.h4, #irssistats div.v4 {
+  background: #fde7ce;
+}
+
+#irssistats div.hm, #irssistats div.vm {
+  background: #dddddd;
+}
+
+#irssistats small {
+  font-size: 5.5pt;
+}
+
+#irssistats .logo {
+  padding: 10px;
+  background: #ffffff url('irssistats_white.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 364px;
+  height: 44px;
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border: 3px black double;
+  -moz-border-radius: 20px;
+}
+
+#irssistats .tdphoto {
+  text-align: center;
+}

@@ -1,0 +1,147 @@
+/* Orange theme... */
+
+body {
+  background: #FFFFFF;
+}
+
+#irssistats * {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  color: #000000;
+  margin: 0;
+}
+
+#irssistats A {
+  color: #FF7700;
+}
+
+#irssistats A:hover {
+  color: #FF9A41;
+}
+
+#irssistats img {
+  border: 0;
+}
+
+#irssistats h1 {
+  font-size: 20pt;
+  margin-bottom: 10px;
+  color: #C05A00;
+}
+
+#irssistats h2 {
+  font-size: 15pt;
+  margin-bottom: 5px;
+  color: #FF7700;
+}
+
+#irssitats p {
+  font-size: 10pt;
+}
+
+#irssistats th {
+  font-size: 9pt;
+  background: #FF7700;
+}
+
+#irssistats td {
+  font-size: 9pt;
+  background: #FFEEEE;
+}
+
+#irssistats td.oneline {
+  width: 100px;
+}
+
+#irssistats small {
+  font-size: 7pt;
+}
+
+#irssistats table {
+  margin-left: auto;
+  margin-right: auto; 
+}
+
+#irssistats div {
+  padding: 10px;
+  margin: 10px;
+  text-align: center;
+}
+
+#irssistats div.h1, #irssistats div.h2, #irssistats div.h3, #irssistats div.h4, #irssistats div.hm {
+  float: left;
+  height: 15px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 0;
+}
+
+#irssistats div.v1, #irssistats div.v2, #irssistats div.v3, #irssistats div.v4, #irssistats div.vm {
+  width: 15px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 0;
+}
+
+#irssistats div.h1 {
+  background: #0000ff;
+  background: url('h1.png');
+}
+
+#irssistats div.h2 {
+  background: #00ff00;
+  background: url('h2.png');
+}
+
+#irssistats div.h3 {
+  background: #ffff00;
+  background: url('h3.png');
+}
+
+#irssistats div.h4 {
+  background: #ff0000;
+  background: url('h4.png');
+}
+
+#irssistats div.hm {
+  background: #ff00ff;
+  background: url('hm.png');
+}
+
+#irssistats div.v1 {
+  background: #0000ff;
+  background: url('v1.png');
+}
+
+#irssistats div.v2 {
+  background: #00ff00;
+  background: url('v2.png');
+}
+
+#irssistats div.v3 {
+  background: #ffff00;
+  background: url('v3.png');
+}
+
+#irssistats div.v4 {
+  background: #ff0000;
+  background: url('v4.png');
+}
+
+#irssistats div.vm {
+  background: #ff00ff;
+  background: url('vm.png');
+}
+
+#irssistats div.logo {
+  background: url('irssistats_white.png');
+  width: 364px;
+  height: 44px;
+  margin: auto;
+  padding: 0;
+}
+
+#irssistats .tdphoto {
+  text-align: center;
+}

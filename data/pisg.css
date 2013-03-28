@@ -1,0 +1,181 @@
+/* "pisg like" theme */
+
+body {
+  background: #dedeee;
+  text-align: center;
+}
+
+#irssistats {
+  width: 650px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#irssistats * {
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 13px;
+  color: black;
+  margin: 0;
+}
+
+#irssistats a {
+     text-decoration: none;
+}
+
+#irssistats a:link {
+  color: #0b407a;
+}
+
+#irssistats a:visited {
+  color: #0b407a;
+}
+ 
+#irssistats a:hover {
+  text-decoration: underline;
+  color: #0b407a;
+}
+ 
+#irssistats img {
+  border: 0;
+}
+
+#irssistats h1 {
+  font-family: Tahoma, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+#irssistats h2 {
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  background-color: #666699;
+  border: 1px #000000 solid;
+  padding: 2px;
+}
+
+#irssitats p {
+  font-size: 10pt;
+}
+
+#irssistats th {
+  background-color: #C8C8DD;
+  text-align: left;
+}
+
+#irssistats_lastdays th, #irssistats_lastweeks th, #irssistats_lastmonths th, #irssistats_tophours th {
+  font-weight: normal;
+  color: #000000;
+  background-color: #CCCCCC;
+  font-size: 10px;
+  text-align: center;
+}
+
+#irssistats td {
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 13px;
+  color: black;
+  text-align: left;
+  background: #bcbcda;
+}
+
+#irssistats_legend td, #irssistats_lastdays td, #irssistats_lastweeks td, #irssistats_lastmonths td, #irssistats_tophours td {
+  text-align: center;
+  background: inherit;
+}
+
+#irssistats td.oneline {
+  width: 100px;
+}
+
+#irssistats small {
+  font-family: "Arial narrow", Arial, sans-serif;
+  font-size: 9px;
+  color: black;
+  text-align: center;
+}
+
+#irssistats table {
+  margin-left: auto;
+  margin-right: auto; 
+}
+
+#irssistats_topusers table, #irssistats_topuserstime table, #irssistats_randtopics table, #irssistats_randurls table, #irssistats_topwords table , #irssistats_bignumbers table {
+  width: 650px;
+}
+
+#irssistats div {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+#irssistats div.h1, #irssistats div.h2, #irssistats div.h3, #irssistats div.h4, #irssistats div.hm {
+  float: left;
+  height: 15px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 0;
+}
+
+#irssistats div.v1, #irssistats div.v2, #irssistats div.v3, #irssistats div.v4, #irssistats div.vm {
+  width: 15px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 0;
+  margin: auto;
+}
+
+#irssistats div.h1 {
+  background: #0000ff;
+  background: url('pisg_blue-h.png');
+}
+
+#irssistats div.h2 {
+  background: #00ff00;
+  background: url('pisg_green-h.png');
+}
+
+#irssistats div.h3 {
+  background: #ffff00;
+  background: url('pisg_yellow-h.png');
+}
+
+#irssistats div.h4 {
+  background: #ff0000;
+  background: url('pisg_red-h.png');
+}
+
+#irssistats div.hm {
+  background: #dd00dd;
+}
+
+#irssistats div.v1 {
+  background: #0000ff;
+  background: url('pisg_blue-v.png');
+}
+
+#irssistats div.v2 {
+  background: #00ff00;
+  background: url('pisg_green-v.png');
+}
+
+#irssistats div.v3 {
+  background: #ffff00;
+  background: url('pisg_yellow-v.png');
+}
+
+#irssistats div.v4 {
+  background: #ff0000;
+  background: url('pisg_red-v.png');
+}
+
+#irssistats div.logo {
+  display: none;
+}
+
+#irssistats .tdphoto {
+  text-align: center;
+}

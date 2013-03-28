@@ -1,0 +1,179 @@
+.TH "IRSSISTATS" "1" 
+.SH "NAME" 
+irssistats \(em A tool to generate HTML IRC stats based on irssi logs. 
+.SH "SYNOPSIS" 
+.PP 
+\fBirssistats\fR [\fB\fI/path/to/file.conf\fR\fP]  
+.SH "DESCRIPTION" 
+.PP 
+\fBirssistats\fR is a tool that make HTML stats from \fBirssi\fR logfiles. 
+.PP 
+The statistics generated display many useful and funny informations about the channel. 
+.SH "USING IT" 
+.PP 
+First you need to copy the files needed for the HTML page : 
+.PP 
+\fBcp /usr/share/irssistats/data/* /path/to/webdir/\fR 
+.PP 
+Then you must edit a configuration file : "/etc/irssistats.conf", "~/.irssistats", or another file given as a parameter. 
+.PP 
+Now you can generate the statistics for your channel : 
+.PP 
+\fBirssistats \fB\fI[/path/to/file.conf]\fR\fP\fR 
+.PP 
+The logfiles for \fBirssi\fR are usually located in "~/irclogs/network/channel.log" 
+.SH "CONFIGURATION FILE" 
+.PP 
+Please look at the sample configuration file in "/usr/share/docs/irssistats/sample.configfile" for an example. 
+.PP 
+The path to the configuration file can be given on the command line : \fBirssistats\fR \fI/path/to/irssistats.conf\fR 
+.PP 
+If no configuration file is given, irssistats looks for files ~/.irssistats.conf or then /etc/irssistats.conf 
+.PP 
+Lines starting by ; # \-\- or // are ignored (comments). 
+.PP 
+This file is read sequencially, so it acts like a script. 
+.PP 
+Each option keyword is case sensitive, and you must put separators around the ':' character. 
+.PP 
+Blank lines must not contain any spaces ! 
+.PP 
+Each option keeps its value until erased by another value. 
+.PP 
+IMPORTANT : the order of options to parse a channel must allways be "input" THEN "nickfile" THEN "photofile" THEN "output". 
+.PP 
+Available options are : 
+.IP "debug" 10 
+Allows you to display debugging informations. 
+.IP "" 10 
+Values : normal / verbose / none 
+.IP "" 10 
+Default : normal 
+.IP "channel" 10 
+Specifies the name of the channel you are parsing. 
+.IP "maintainer" 10 
+Nickname of the person generating the statistics (you !). 
+.IP "language" 10 
+Language you want to use to display the statistics 
+.IP "" 10 
+Values : fr en de du es it fi ru et 
+.IP "" 10 
+Default : en 
+.IP "theme" 10 
+Theme (colors) to use for the statistics, separated by comas 
+.IP "" 10 
+In fact this is the name of the CSS file to include. 
+.IP "" 10 
+This option has no effect if you use a custom header : you'll have to include the CSS yourself. 
+.IP "" 10 
+The first theme is the primary stylesheet, and the others are alternate themes 
+.IP "top_words" 10 
+Allows you to disable top words list which is using a lot of memory 
+.IP "" 10 
+Default : yes 
+.IP "ranking" 10 
+Specifies which ranking method to use 
+.IP "" 10 
+Values : lines / words / letters 
+.IP "" 10 
+Default : lines 
+.IP "quarter" 10 
+Display quarters in top hours (smoother graphs) 
+.IP "" 10 
+Default : no 
+.IP "weeks" 10 
+Display last week statistics 
+.IP "" 10 
+Default : no 
+.IP "months" 10 
+Display last months statistics 
+.IP "" 10 
+Default : no 
+.IP "refresh_time" 10 
+Specifies the refresh time in seconds (0 to disable) 
+.IP "" 10 
+This option has no effect if you use a custom header : you'll have to include the refresh code yourself. 
+.IP "" 10 
+Default : 3600 
+.IP "photo_size" 10 
+Specifies the size in pixels of the thumbnails for users 
+.IP "" 10 
+This option has an effect only if there is a photofile (see below) 
+.IP "" 10 
+Set to 0 to disable (display pictures with their real size) 
+.IP "" 10 
+Default : 60 
+.IP "w3c_link" 10 
+Set this to "no" if you don't want the W3C logo. 
+.IP "" 10 
+Default : yes 
+.IP "logo" 10 
+Set this to "no" if you don't want the irssistats logo. 
+.IP "" 10 
+Default : yes 
+.IP "header" 10 
+Use your custom header file (HTML code between <!DOCTYPE... and <body> included) 
+.IP "footer" 10 
+Use your custom footer file (HTML code between </body> and </html> included) 
+.IP "input" 10 
+This allow you to parse a file. 
+.IP "" 10 
+Note that irssistats will really parse the file as soon as it reads this option. 
+.IP "nickfile" 10 
+This allow you to group nick using a nickfile. 
+.IP "" 10 
+Note that irssistats will really merge the nicks as soon as it reads this option. 
+.IP "photofile" 10 
+This allow you to display pictures for users. 
+.IP "output" 10 
+This allow you to generate the HTML file. 
+.IP "" 10 
+Note that irssistats will really generate the HTML file as soon as it reads this option. 
+.SH "NICKFILE" 
+.PP 
+Since version 0.4 of \fBirssistats\fR, you can use a nickfile to specify nicks to join. 
+.PP 
+Each line of the nickfile contains the final nick and a regular expression. 
+.PP 
+Examples : 
+.IP "royale \(a^[Rr]oyale" 10 
+join nicks starting with "Royale" or "royale" to the final nick "royale" 
+.IP "royale \(a^antoine$" 10 
+also join the nick "antoine" to the final nick "royale" 
+.IP "djakette [Dd]ja" 10 
+join any nick that contains "Dja" or "dja" to final nick "djakette" 
+.IP "<NULL> \(a^bot\|royale$" 10 
+remove "bot|royale" from statistics 
+.PP 
+The nickfile must not contain any comments. 
+.PP 
+The <NULL> final nick will remove matching nicks from all statistics, except from "Some URLs" and "Some topics"... 
+.PP 
+You can also take a look at the "sample.nickfile" in this package (in "/usr/share/doc/irssistats/"). 
+.SH "PHOTOFILE" 
+.PP 
+Since version 0.70 of \fBirssistats\fR, you can use a photofile to display pictures for users. 
+.PP 
+Each line of the photofile contains the final nick and an URL for the image. 
+.PP 
+Examples : 
+.IP "royale http://royale.zerezo.com/chat/faces/happy40.png" 10 
+(a full address) 
+.IP "sektor ../chat/faces/happy40.png" 10 
+(a relative address) 
+.PP 
+The photofile must not contain any comments. 
+.PP 
+You can also take a look at the "sample.photofile" in this package (in "/usr/share/doc/irssistats/"). 
+.SH "SEE ALSO" 
+.PP 
+\fBirssi\fR (1). 
+.SH "INFORMATIONS" 
+.PP 
+You can find informations and updates of \fBirssistats\fR at \fIhttp://royale.zerezo.com/irssistats/ (link to URL http://royale.zerezo.com/irssistats/) \fR. 
+.PP 
+Report bugs to royale@zerezo.com. 
+.SH "AUTHOR" 
+.PP 
+Antoine Jacquet royale@zerezo.com 
+.\" created by instant / docbook-to-man, Sun 20 May 2007, 18:12 

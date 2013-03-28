@@ -1,0 +1,128 @@
+/* Grayscale theme */
+
+body {
+  background: #bbbbbb;
+  text-align: center;
+}
+
+#irssistats {
+  background: #dddddd;
+  border: 3px #777777 double;
+  margin: 20px 100px 20px 100px;
+}
+
+#irssistats_header, #irssistats_legend, #irssistats_lastdays, #irssistats_lastweeks, #irssistats_lastmonths, #irssistats_tophours, #irssistats_topusers, #irssistats_topuserstime, #irssistats_randtopics, #irssistats_randurls, #irssistats_topwords, #irssistats_bignumbers, #irssistats_footer {
+  background: #ffffff;
+  border: 1px #777777 dotted;
+}
+
+#irssistats * {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  color: #000000;
+  margin: 0;
+}
+
+#irssistats A {
+  color: #000000;
+}
+
+#irssistats A:hover {
+  color: #666666;
+  text-decoration: none;
+}
+
+#irssistats img {
+  border: 0;
+}
+
+#irssistats h1 {
+  font-size: 20pt;
+  margin-bottom: 10px;
+  color: #000000;
+}
+
+#irssistats h2 {
+  font-size: 15pt;
+  margin-bottom: 5px;
+  color: #555555;
+}
+
+#irssitats p {
+  font-size: 10pt;
+}
+
+#irssistats th {
+  font-size: 9pt;
+  color: #ffffff;
+  background: #555555;
+}
+
+#irssistats td {
+  font-size: 8pt;
+  background: #ffffff;
+  border: 1px #cccccc dotted;
+}
+
+#irssistats td.oneline {
+  width: 100px;
+}
+
+#irssistats small {
+  font-size: 6pt;
+}
+
+#irssistats table {
+  margin-left: auto;
+  margin-right: auto; 
+}
+
+#irssistats div {
+  padding: 10px;
+  margin: 10px;
+  text-align: center;
+}
+
+#irssistats div.h1, #irssistats div.h2, #irssistats div.h3, #irssistats div.h4, #irssistats div.hm {
+  float: left;
+  height: 15px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 0;
+}
+
+#irssistats div.v1, #irssistats div.v2, #irssistats div.v3, #irssistats div.v4, #irssistats div.vm {
+  width: 15px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 0;
+}
+
+#irssistats div.h1, #irssistats div.v1 {
+  background: #000000;
+}
+
+#irssistats div.h2, #irssistats div.v2 {
+  background: #777777;
+}
+
+#irssistats div.h3, #irssistats div.v3 {
+  background: #aaaaaa;
+}
+
+#irssistats div.h4, #irssistats div.v4 {
+  background: #dddddd;
+}
+
+#irssistats div.hm, #irssistats div.vm {
+  background: #888888;
+}
+
+#irssistats div.logo {
+  display: none;
+}
+
+#irssistats .tdphoto {
+  text-align: center;
+}

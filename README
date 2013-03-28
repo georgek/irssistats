@@ -1,0 +1,39 @@
+irssistats 0.75
+site: http://royale.zerezo.com/irssistats/
+mail: royale@zerezo.com
+
+install:
+make
+cp data/* /path/to/webdir/
+
+usage:
+irssistats [/path/to/file.conf]
+
+configfile:
+Since version 0.5 of irssistats, all the options are located in a config file.
+This allow you to specify multiple channels to parse.
+Take a look at the "sample.configfile" in this package to know more about the options and their usage.
+
+nickfile:
+Since version 0.4 of irssistats, you can use a nickfile to specify nicks to join.
+Each line of the nickfile contains the final nick and a regular expression.
+Examples :
+  royale  ^[Rr]oyale   : join nicks starting with "Royale" or "royale" to the final nick "royale"
+  royale  ^antoine$    : also join the nick "antoine" to the final nick "royale"
+  djakette  [Dd]ja     : join any nick that contains "Dja" or "dja" to final nick "djakette"
+  <NULL> ^bot\|royale$ : remove "bot|royale" from statistics
+The nickfile must not contain any comments.
+The <NULL> final nick will remove matching nicks from all statistics, except from "Some URLs" and "Some topics"...
+You can also take a look at the "sample.nickfile" in this package.
+
+photofile:
+Since version 0.70 of irssistats, you can use a photofile to display pictures for users.
+Each line of the photofile contains the final nick and an URL for the image.
+Examples :
+  royale http://royale.zerezo.com/chat/faces/happy40.png (a full address)
+  sektor ../chat/faces/happy40.png (a relative address)
+
+links:
+http://tnsp.org/fisg.php
+http://pisg.sourceforge.net/
+http://netti.nic.fi/~mauvinen/mircstats/
