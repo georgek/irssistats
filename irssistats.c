@@ -629,6 +629,8 @@ static struct option long_options[] =
      {"silent",  no_argument,       0, 's'},
      {"verbose", no_argument,       0, 'v'},
      {"output",  required_argument, 0, 'o'},
+     {"cachein", required_argument, 0, 'i'},
+     {"cacheout",required_argument, 0, 'a'},
      {"version", no_argument,       &opt_version, 1},
      {"help",    no_argument,       0, 'h'},
      {0, 0, 0, 0}
@@ -2145,10 +2147,176 @@ void reset()
      }
 }
 
+void serialise_words(FILE *fp, struct letter *node)
+{
+     int i, pack = 0;
+     
+     fprintf(fp, "%d,", node->nb);
+     /* pack 26 bits into a word, bit n will be set if node->next[n] is
+      * non-NULL */
+     for (i = 25; i >= 0; --i) {
+          pack = pack << 1;
+          if (node->next[i]) {
+               pack |= 1;
+          }
+     }
+     fprintf(fp, "%d\n", pack);
+
+     for (i = 0; i < 26; ++i) {
+          if (node->next[i]) {
+               serialise_words(fp, node->next[i]);
+          }
+     }
+}
+
+struct letter *unserialise_words(FILE *fp)
+{
+     struct letter *node = malloc(sizeof(struct letter));
+     char line[MAXLINELENGTH];
+     int i, n, pack;
+
+     if (fgets(line, MAXLINELENGTH, fp) == NULL){
+          return;
+     }
+     sscanf(line, "%d,%d\n", &(node->nb), &pack);
+     for (i = 0; i < 26; ++i) {
+          if (pack & 1) {
+               node->next[i] = unserialise_words(fp);
+          }
+          else {
+               node->next[i] = NULL;
+          }
+          pack = pack >> 1;
+     }
+     return node;
+}
+
+void serialise(FILE *fp)
+{
+     int i,j;
+     
+     fprintf(fp,
+             "%d\n%s\n%s\n%s\n%d\n%d\n%d\n%s\n%s\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n"
+             "%d\n%d\n%d\n%d\n%d\n", language, channel, maintainer, theme,
+             refresh_time, w3c_link, logo, header, footer, totallines,
+             top_words, ranking, quarter, months, weeks, photo_size,
+             conf_nuserstable, conf_nuserstime, conf_nurls, conf_ntopics,
+             conf_nwords);
+
+     /* users */
+     fprintf(fp, "%d\n%d\n", maxusers, nbusers);
+     for (i = 0; i < nbusers; ++i) {
+          fprintf(fp, "%s\n%d,%d,%d,%d,%d,%d,%d\n",
+                  users[i].nick, users[i].lines,
+                  users[i].words, users[i].letters,
+                  users[i].hours[0], users[i].hours[1],
+                  users[i].hours[2], users[i].hours[3]);
+          fprintf(fp, "%s\n", users[i].quote);
+          for (j = 0; j < NBCOUNTERS; ++j) {
+               fprintf(fp, "%d,", users[i].counters[j]);
+          }
+          fprintf(fp, "%d\n", users[i].temp);
+     }
+
+     /* days */
+     for (i = 0; i < 31; ++i) {
+          fprintf(fp, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+                  lastdays[i].lines, lastdays[i].hours[0],
+                  lastdays[i].hours[1],
+                  lastdays[i].hours[2], lastdays[i].hours[3],
+                  lastweeks[i].lines, lastweeks[i].hours[0],
+                  lastweeks[i].hours[1],
+                  lastweeks[i].hours[2], lastweeks[i].hours[3],
+                  lastmonths[i].lines, lastmonths[i].hours[0],
+                  lastmonths[i].hours[1],
+                  lastmonths[i].hours[2], lastmonths[i].hours[3]);
+     }
+     fprintf(fp, "%d\n%s\n%d,%d\n", days,currday,currwday,currmon);
+
+     for (i = 0; i < 24*4; ++i) {
+          fprintf(fp, "%d,", hours[i]);
+     }
+     fprintf(fp, "%d\n", lines);
+
+     serialise_words(fp, &words);
+}
+
+void unserialise(FILE *fp)
+{
+     int i,j;
+     char c;
+     
+     fscanf(fp,
+            "%d\n%s\n%s\n%s\n%d\n%d\n%d\n%s\n%s\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n"
+            "%d\n%d\n%d\n%d\n%d\n", &language, channel, maintainer, theme,
+            &refresh_time, &w3c_link, &logo, header, footer, &totallines,
+            &top_words, &ranking, &quarter, &months, &weeks, &photo_size,
+            &conf_nuserstable, &conf_nuserstime, &conf_nurls, &conf_ntopics,
+            &conf_nwords);
+
+     fscanf(fp, "%d\n%d", &maxusers, &nbusers);
+     getc(fp);
+     users = realloc(users,sizeof(struct user) * maxusers);
+     for (i = 0; i < nbusers; ++i) {
+          j = 0;
+          while ((c = getc(fp)) != '\n') {
+               users[i].nick[j] = c;
+               ++j;
+          }
+          users[i].nick[j] = '\0';
+          fscanf(fp, "%d,%d,%d,%d,%d,%d,%d",
+                 &users[i].lines,
+                 &users[i].words, &users[i].letters,
+                 &users[i].hours[0], &users[i].hours[1],
+                 &users[i].hours[2], &users[i].hours[3]);
+          getc(fp);
+          j = 0;
+          while ((c = getc(fp)) != '\n') {
+               users[i].quote[j] = c;
+               ++j;
+          }
+          users[i].quote[j] = '\0';
+          for (j = 0; j < NBCOUNTERS; ++j) {
+               fscanf(fp, "%d,", &users[i].counters[j]);
+          }
+          users[i].photo = NULL;
+          fscanf(fp, "%d\n", &users[i].temp);
+     }
+
+     for (i = 0; i < 31; ++i) {
+          fscanf(fp, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+                  &lastdays[i].lines, &lastdays[i].hours[0],
+                  &lastdays[i].hours[1],
+                  &lastdays[i].hours[2], &lastdays[i].hours[3],
+                  &lastweeks[i].lines, &lastweeks[i].hours[0],
+                  &lastweeks[i].hours[1],
+                  &lastweeks[i].hours[2], &lastweeks[i].hours[3],
+                  &lastmonths[i].lines, &lastmonths[i].hours[0],
+                  &lastmonths[i].hours[1],
+                  &lastmonths[i].hours[2], &lastmonths[i].hours[3]);
+     }
+     fscanf(fp, "%d\n", &days);
+     for (i = 0; i < 15; ++i) {
+          currday[i] = getc(fp);
+     }
+     fgetc(fp);
+     currday[i] = '\0';
+     fscanf(fp, "%d,%d\n", &currwday,&currmon);
+
+     for (i = 0; i < 24*4; ++i) {
+          fscanf(fp, "%d,", &hours[i]);
+     }
+     fscanf(fp, "%d\n", &lines);
+
+     words = *unserialise_words(fp);
+}
+
 int main(int argc,char *argv[])
 {
      int i,c,oi;
-     char *config_file = NULL, *output_file = NULL, *nick_file = NULL;
+     char *config_file = NULL, *output_file = NULL, *nick_file = NULL,
+          *cache_in = NULL, *cache_out = NULL;
+     FILE *serial;
 
      (void) setlocale(LC_ALL, "");
      if ((users=malloc(maxusers*sizeof(struct user)))==NULL) {
@@ -2159,7 +2327,7 @@ int main(int argc,char *argv[])
 
      /* parse options */
      i = 0;
-     while ((c = getopt_long(argc, argv, "hc:n:o:sv",
+     while ((c = getopt_long(argc, argv, "hc:n:o:i:a:sv",
                              long_options, &oi)) != -1) {
           
           if (-1 == c) {
@@ -2190,17 +2358,23 @@ int main(int argc,char *argv[])
           case 'o':
                output_file = optarg;
                break;
+          case 'i':
+               cache_in = optarg;
+               break;
+          case 'a':
+               cache_out = optarg;
+               break;
           default:
                return 1;
           }
      }
 
-     if (!output_file) {
-          printf("An output filename must be given with -o.\n");
+     if (output_file == NULL && cache_out == NULL) {
+          printf("An output filename must be given with -o or -a.\n");
           print_help();
           return 1;
      }
-     if (optind == argc) {
+     if (optind == argc && cache_in == NULL) {
           printf("At least one input file must be given.\n");
           print_help();
           return 1;
@@ -2213,6 +2387,12 @@ int main(int argc,char *argv[])
           if (output_file) {
                printf("Output file: %s\n", output_file);
           }
+          if (cache_in) {
+               printf("Using cache file: %s\n", cache_in);
+          }
+          if (cache_out) {
+               printf("Cache out file: %s\n", cache_out);
+          }
      }
 
      if (2 == debug) {
@@ -2222,11 +2402,17 @@ int main(int argc,char *argv[])
           }
      }
 
+     if (cache_in) {
+          serial = fopen(cache_in, "r");
+          unserialise(serial);
+          fclose(serial);
+     }
+
      if (config_file) {
           parse_config(config_file);
      }
 
-     /* allocate other structures */
+     /* alloc user-sized structs */
      if ((urls=malloc(conf_nurls*sizeof(struct url)))==NULL) {
           fprintf(stderr,"unable to malloc memory\n");
           exit(1);
@@ -2239,9 +2425,15 @@ int main(int argc,char *argv[])
           fprintf(stderr,"unable to malloc memory\n");
           exit(1);
      }
-
+     
      for (i = optind; i < argc; ++i) {
           parse_log(argv[i]);
+     }
+
+     if (cache_out) {
+          serial = fopen(cache_out, "w");
+          serialise(serial);
+          fclose(serial);
      }
 
      if (nick_file) {
@@ -2250,7 +2442,10 @@ int main(int argc,char *argv[])
 
      bestwords(words,0);
      if (L("CHARSET")=="KOI8-R") bestruswords(ruswords,0);
-     gen_xhtml(output_file);
 
+     if (output_file) {
+          gen_xhtml(output_file);
+     }
+     
      return 0;
 }
