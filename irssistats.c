@@ -42,11 +42,6 @@
 #define MAXNICKLENGTH 50
 #define MAXLINELENGTH 2000
 #define MAXQUOTELENGTH 100
-#define NBUSERS 50
-#define NBUSERSTIME 10
-#define NBURLS 5
-#define NBTOPICS 5
-#define NBWORDS 20
 #define MINWORDLENGTH 5
 
 /* irssistats */
@@ -622,6 +617,10 @@ int opt_version = 0;
 
 /* options */
 int conf_nuserstable = 50;
+int conf_nuserstime = 10;
+int conf_nurls = 5;
+int conf_ntopics = 5;
+int conf_nwords = 20;
 
 static struct option long_options[] =
 {
@@ -667,19 +666,19 @@ struct user
 int nbusers=0;
 int maxusers=BASEUSERS;
 
-struct
+struct url
 {
      char nick[MAXNICKLENGTH];
      char url[MAXLINELENGTH];
      char shorturl[MAXQUOTELENGTH+1];
-} urls[NBURLS];
+} *urls;
 int nburls=0;
 
-struct
+struct topic
 { 
      char nick[MAXNICKLENGTH];
      char topic[MAXQUOTELENGTH+1];
-} topics[NBTOPICS];
+} *topics;
 int nbtopics=0;
 
 struct
@@ -700,11 +699,11 @@ struct letter
      struct letter *next[26];
 } words;
 
-struct
+struct word
 {
      int nb;
      char word[MAXLINELENGTH];
-} topwords[NBWORDS];
+} *topwords;
 
 struct rusletter
 {
@@ -841,9 +840,9 @@ char tempword[MAXLINELENGTH];
 void bestwords(struct letter pos,int cur)
 {
      int i,j;
-     if ((cur>=MINWORDLENGTH)&&(pos.nb>topwords[NBWORDS-1].nb)) {
+     if ((cur>=MINWORDLENGTH)&&(pos.nb>topwords[conf_nwords-1].nb)) {
           for (i=0;pos.nb<topwords[i].nb;i++);
-          for (j=NBWORDS-1;j>i;j--) {
+          for (j=conf_nwords-1;j>i;j--) {
                topwords[j].nb=topwords[j-1].nb;
                strcpy(topwords[j].word,topwords[j-1].word);
           }
@@ -862,9 +861,9 @@ void bestwords(struct letter pos,int cur)
 void bestruswords(struct rusletter pos,int cur)
 {
      int i,j;
-     if ((cur>=MINWORDLENGTH)&&(pos.nb>topwords[NBWORDS-1].nb)) {
+     if ((cur>=MINWORDLENGTH)&&(pos.nb>topwords[conf_nwords-1].nb)) {
           for (i=0;pos.nb<topwords[i].nb;i++);
-          for (j=NBWORDS-1;j>i;j--) {
+          for (j=conf_nwords-1;j>i;j--) {
                topwords[j].nb=topwords[j-1].nb;
                strcpy(topwords[j].word,topwords[j-1].word);
           }
@@ -1144,9 +1143,10 @@ void parse_log(char *logfile)
                          for (i=21;message[i]!=':';i++);
                          message=&message[i+2];
                          nbtopics++;
-                         if ((nbtopics<=NBTOPICS)
-                             || (rand()%(nbtopics/NBTOPICS)==0)) {
-                              temp=nbtopics<=NBTOPICS?nbtopics-1:rand()%NBTOPICS;
+                         if ((nbtopics<=conf_ntopics)
+                             || (rand()%(nbtopics/conf_ntopics)==0)) {
+                              temp=nbtopics<=
+                                   conf_ntopics?nbtopics-1:rand()%conf_ntopics;
                               strcpy(topics[temp].nick,nick);
                               strncpy(topics[temp].topic,message,MAXQUOTELENGTH);
                          }
@@ -1348,8 +1348,9 @@ void parse_log(char *logfile)
                          for (i=0;(message[i]!=' ') && (i<strlen(message));i++);
                          message[i]='\0';
                          nburls++;
-                         if ((nburls<=NBURLS) || (rand()%(nburls/NBURLS)==0)) {
-                              temp=nburls<=NBURLS?nburls-1:rand()%NBURLS;
+                         if ((nburls<=conf_nurls)
+                             || (rand()%(nburls/conf_nurls)==0)) {
+                              temp=nburls<=conf_nurls?nburls-1:rand()%conf_nurls;
                               strcpy(urls[temp].nick,nick);
                               strcpy(urls[temp].url,message);
                               strncpy(urls[temp].shorturl,
@@ -1725,7 +1726,7 @@ void gen_xhtml(char *xhtmlfile)
           fprintf(fic,"<th colspan=\"2\">%s %d-%d</th>",L("HOURS"),i*6,i*6+5);
      }
      fprintf(fic,"</tr>\n");
-     for (i=1;i<=NBUSERSTIME;i++) {
+     for (i=1;i<=conf_nuserstime;i++) {
           fprintf(fic,"<tr><td>%d</td>",i);
           for (j=0;j<4;j++) {
                user=-1;
@@ -1750,7 +1751,7 @@ void gen_xhtml(char *xhtmlfile)
      /* random topics */
      fprintf(fic,"<div id=\"irssistats_randtopics\">\n<h2>%s</h2>\n",L("RANDTOPICS"));
      fprintf(fic,"<table>\n<tr><th>%s</th><th>%s</th></tr>\n",L("CHANGEDBY"),L("NEWTOPIC"));
-     for (i=nbtopics<NBTOPICS?nbtopics-1:NBTOPICS-1;i>=0;i--) {
+     for (i=nbtopics<conf_ntopics?nbtopics-1:conf_ntopics-1;i>=0;i--) {
           fprintf(fic,"<tr><td>%s</td><td>\"",topics[i].nick);
           printhtml(fic,topics[i].topic);
           fprintf(fic,"\"</td></tr>\n");
@@ -1760,7 +1761,7 @@ void gen_xhtml(char *xhtmlfile)
      /* random urls */
      fprintf(fic,"<div id=\"irssistats_randurls\">\n<h2>%s</h2>\n",L("RANDURLS"));
      fprintf(fic,"<table>\n<tr><th>%s</th><th>%s</th></tr>\n",L("POSTEDBY"),L("POSTEDURL"));
-     for (i=nburls<NBURLS?nburls-1:NBURLS-1;i>=0;i--) {
+     for (i=nburls<conf_nurls?nburls-1:conf_nurls-1;i>=0;i--) {
           fprintf(fic,"<tr><td>%s</td><td>\"<a href=\"",urls[i].nick);
           printhtml(fic,urls[i].url);
           fprintf(fic,"\">");
@@ -1773,7 +1774,7 @@ void gen_xhtml(char *xhtmlfile)
      if (top_words) {
           fprintf(fic,"<div id=\"irssistats_topwords\">\n<h2>%s</h2>\n",L("TOPWORDS"));
           fprintf(fic,"<table>\n<tr><th></th><th>%s</th><th>%s</th></tr>\n",L("WORD"),L("OCCURRENCES"));
-          for (i=0;i<NBWORDS;i++) {
+          for (i=0;i<conf_nwords;i++) {
                if (topwords[i].nb!=0) {
                     fprintf(fic,"<tr><td>%d</td><td>\"%s\"</td><td>%d</td></tr>\n",i+1,topwords[i].word,topwords[i].nb);
                }
@@ -2091,6 +2092,30 @@ void parse_config(char *configfile)
                     }
                     conf_nuserstable = strtol(value, NULL, 10);
                }
+               else if (strcmp("nuserstime",keyword)==0) {
+                    if (debug==2) {
+                         fprintf(stderr,"setting nuserstime to \"%s\"\n",value);
+                    }
+                    conf_nuserstime = strtol(value, NULL, 10);
+               }
+               else if (strcmp("nurls",keyword)==0) {
+                    if (debug==2) {
+                         fprintf(stderr,"setting nurls to \"%s\"\n",value);
+                    }
+                    conf_nurls = strtol(value, NULL, 10);
+               }
+               else if (strcmp("ntopics",keyword)==0) {
+                    if (debug==2) {
+                         fprintf(stderr,"setting ntopics to \"%s\"\n",value);
+                    }
+                    conf_ntopics = strtol(value, NULL, 10);
+               }
+               else if (strcmp("nwords",keyword)==0) {
+                    if (debug==2) {
+                         fprintf(stderr,"setting nwords to \"%s\"\n",value);
+                    }
+                    conf_nwords = strtol(value, NULL, 10);
+               }
                else {
                     fprintf(stderr,"error in config file : \"%s\" is an unknown keyword (line %d)\n",keyword,configlines);
                     exit(1); 
@@ -2127,7 +2152,7 @@ void reset()
      }
      freewords(&words);
      freeruswords(&ruswords);
-     for (i=0;i<NBWORDS;i++) {
+     for (i=0;i<conf_nwords;i++) {
           topwords[i].nb=0;
      }
      totallines=0;
@@ -2217,6 +2242,20 @@ int main(int argc,char *argv[])
 
      if (config_file) {
           parse_config(config_file);
+     }
+
+     /* allocate other structures */
+     if ((urls=malloc(conf_nurls*sizeof(struct url)))==NULL) {
+          fprintf(stderr,"unable to malloc memory\n");
+          exit(1);
+     }
+     if ((topics=malloc(conf_ntopics*sizeof(struct topic)))==NULL) {
+          fprintf(stderr,"unable to malloc memory\n");
+          exit(1);
+     }
+     if ((topwords=malloc(conf_nwords*sizeof(struct word)))==NULL) {
+          fprintf(stderr,"unable to malloc memory\n");
+          exit(1);
      }
 
      for (i = optind; i < argc; ++i) {
