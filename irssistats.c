@@ -1986,24 +1986,6 @@ void parse_config(char *configfile)
                     }
                     strcpy(footer,value);
                }
-               /* else if (strcmp("input",keyword)==0) { */
-               /*      expand(value); */
-               /*      if (debug==2) { */
-               /*           fprintf(stderr,"parsing log file \"%s\"\n",value); */
-               /*      } */
-               /*      parse_log(value); */
-               /* } */
-/*                else if (strcmp("nickfile",keyword)==0) { */
-/*                     expand(value); */
-/*                     if (debug==2) { */
-/*                          fprintf(stderr,"nick alias using file \"%s\"\n",value); */
-/*                     } */
-/* #ifdef __WIN32__ */
-/*                     fprintf(stderr,"no support for nickfile in WIN32 version\n"); */
-/* #else */
-/*                     parse_nick(value); */
-/* #endif */
-/*                } */
                else if (strcmp("photofile",keyword)==0) {
                     expand(value);
                     if (debug==2) {
@@ -2269,18 +2251,6 @@ int main(int argc,char *argv[])
      bestwords(words,0);
      if (L("CHARSET")=="KOI8-R") bestruswords(ruswords,0);
      gen_xhtml(output_file);
-     
-     /* if (argc==1) { */
-     /*      parse_config(NULL); */
-     /* } */
-     /* else if (argc==2) { */
-     /*      parse_config(argv[1]); */
-     /* } */
-     /* else{ */
-     /*      fprintf(stderr,"Usage : %s [/path/to/file.conf]\n",argv[0]); */
-     /*      fprintf(stderr,"Version : irssistats %s\n",VERSION); */
-     /*      exit(1); */
-     /* } */
 
      return 0;
 }
