@@ -29,6 +29,7 @@
 #include <time.h>
 #include <string.h>
 #include <locale.h>
+#include <getopt.h>
 #ifdef __WIN32__
 #define GLOBALCONF "irssistats.conf"
 #else
@@ -598,8 +599,8 @@ char *L(char *key)
 /* Variables */
 
 int debug=1; /* 0 = none ; 1 = normal ; 2 = verbose */
-char channel[MAXLINELENGTH]="set_channel_in_config_file";
-char maintainer[MAXLINELENGTH]="set_maintainer_in_config_file";
+char channel[MAXLINELENGTH]="Unknown";
+char maintainer[MAXLINELENGTH]="Unknown";
 char theme[MAXLINELENGTH]="default,biseau,blue,dark,damier,grayscale,namour,"
      "niflheim,pisg,zeduel,zerezo";
 int refresh_time=0; /* 0 = disabled */
@@ -615,6 +616,41 @@ int quarter=0; /* 1 = enabled */
 int months=0; /* 1 = enabled */
 int weeks=0; /* 1 = enabled */
 int photo_size=60;
+
+/* Command line options */
+int opt_version = 0;
+
+/* options */
+int conf_nuserstable = 50;
+
+static struct option long_options[] =
+{
+     {"config",  required_argument, 0, 'c'},
+     {"nickfile",required_argument, 0, 'n'},
+     {"silent",  no_argument,       0, 's'},
+     {"verbose", no_argument,       0, 'v'},
+     {"output",  required_argument, 0, 'o'},
+     {"version", no_argument,       &opt_version, 1},
+     {"help",    no_argument,       0, 'h'},
+     {0, 0, 0, 0}
+};
+
+void print_version()
+{
+     printf("irssistats %s\n"
+            "Copyright (C) 2002-2004  Antoine Jacquet <royale@zerezo.com>\n"
+            "http://royale.zerezo.com/irssistats/\n"
+            "License GPLv2+: GNU GPL version 2 or later"
+            "<http://gnu.org/licenses/gpl.html>\n"
+            "This is free software: you are free to change and redistribute it.\n"
+            "There is NO WARRANTY, to the extent permitted by law.\n",
+            VERSION);
+}
+
+void print_help()
+{
+     printf("usage...\n");
+}
 
 struct user
 {
@@ -1025,7 +1061,7 @@ void parse_log(char *logfile)
           exit(1);
      }
      if (debug) {
-          printf("working on %s : ",channel);
+          printf("working on file: %s : ", logfile);
      }
      while (fgets(line,MAXLINELENGTH,fic)!=NULL) {
           /* remove \n */
@@ -1048,9 +1084,9 @@ void parse_log(char *logfile)
           line[i-1]='\0';
           pos=0;
           totallines++;
-          if (totallines%10000==0 && debug) {
-               printf("."); fflush(stdout);
-          }
+          /* if (totallines%10000==0 && debug) { */
+          /*      printf("."); fflush(stdout); */
+          /* } */
           if (strncmp("--- Log opened",line,14)==0)
           {
                /* --- Log opened Wed May 01 00:00 2002 */
@@ -1608,7 +1644,7 @@ void gen_xhtml(char *xhtmlfile)
           fprintf(fic,"<th></th>");
      }
      fprintf(fic,"</tr>");
-     for (i=1;i<=NBUSERS;i++) {
+     for (i=1;i<=conf_nuserstable;i++) {
           user=-1;
           max=0;
           switch (ranking) {
@@ -1764,7 +1800,7 @@ void gen_xhtml(char *xhtmlfile)
   
      /* footer */
      fprintf(fic,"<div id=\"irssistats_footer\">\n<p>");
-     fprintf(fic,L("TIME"),totallines,days,(int)(time(NULL)-debut));
+     fprintf(fic,L("TIME"),totallines,days+1,(int)(time(NULL)-debut));
      fprintf(fic,"</p>\n<p>%s <a href=\"%s\">irssistats %s</a></p>\n",L("FOOTER"),URL,VERSION);
      if (w3c_link) {
           fprintf(fic,"<p>\n<a href=\"http://validator.w3.org/check/referer\"><img src=\"valid-xhtml10.png\" height=\"31\" width=\"88\" alt=\"Valid XHTML 1.0!\" /></a>\n");
@@ -1826,8 +1862,12 @@ void parse_config(char *configfile)
           line[MAXLINELENGTH-1]='\0';
           if ((fic=fopen(line,"rt"))==NULL) {
                if ((fic=fopen(GLOBALCONF,"rt"))==NULL) {
-                    fprintf(stderr,"can't find config file : \"%s\" nor \"" GLOBALCONF "\"\n",line);
-                    fprintf(stderr,"please give the path to the config file in argument\n");
+                    fprintf(stderr,
+                            "can't find config file : \"%s\" nor \""
+                            GLOBALCONF "\"\n",line);
+                    fprintf(stderr,
+                            "please give the path to the config file in"
+                            "argument\n");
                     exit(1);
                }
           }
@@ -1841,29 +1881,22 @@ void parse_config(char *configfile)
                            "%s : %s\n",
                            (char *)&keyword,
                            (char *)&value))!=2) {
-                    fprintf(stderr,"error in config file : each line must have the format \"keyword : value\" (line %d)\n",configlines);
+                    fprintf(stderr,
+                            "error in config file : each line must have the"
+                            "format \"keyword : value\" (line %d)\n",
+                            configlines);
                     exit(1);
                }
-               if (strcmp("debug",keyword)==0){
-                    if (strcmp("none",value)==0) debug=0;
-                    else if (strcmp("normal",value)==0) {
-                         debug=1;
-                    }
-                    else if (strcmp("verbose",value)==0) {
-                         debug=2;
-                         fprintf(stderr,"switching to verbose output\n");
-                    }
-                    else {
-                         fprintf(stderr,"unknown value for \"debug\" option, must be \"normal\", \"verbose\" or \"none\"\n");
-                         exit(1);
-                    }
-               }
-               else if (strcmp("channel",keyword)==0) {
-                    if (debug==2) fprintf(stderr,"setting channel name to \"%s\"\n",value);
+               if (strcmp("channel",keyword)==0) {
+                    if (debug==2) fprintf(stderr,
+                                          "setting channel name to \"%s\"\n",
+                                          value);
                     strcpy(channel,value);
                }
                else if (strcmp("maintainer",keyword)==0) {
-                    if (debug==2) fprintf(stderr,"setting maintainer to \"%s\"\n",value);
+                    if (debug==2) fprintf(stderr,
+                                          "setting maintainer to \"%s\"\n",
+                                          value);
                     strcpy(maintainer,value);
                }
                else if (strcmp("language",keyword)==0) {
@@ -1952,74 +1985,30 @@ void parse_config(char *configfile)
                     }
                     strcpy(footer,value);
                }
-               else if (strcmp("input",keyword)==0) {
-                    expand(value);
-                    if (debug==2) {
-                         fprintf(stderr,"parsing log file \"%s\"\n",value);
-                    }
-                    parse_log(value);
-               }
-               else if (strcmp("nickfile",keyword)==0) {
-                    expand(value);
-                    if (debug==2) {
-                         fprintf(stderr,"nick alias using file \"%s\"\n",value);
-                    }
-#ifdef __WIN32__
-                    fprintf(stderr,"no support for nickfile in WIN32 version\n");
-#else
-                    parse_nick(value);
-#endif
-               }
+               /* else if (strcmp("input",keyword)==0) { */
+               /*      expand(value); */
+               /*      if (debug==2) { */
+               /*           fprintf(stderr,"parsing log file \"%s\"\n",value); */
+               /*      } */
+               /*      parse_log(value); */
+               /* } */
+/*                else if (strcmp("nickfile",keyword)==0) { */
+/*                     expand(value); */
+/*                     if (debug==2) { */
+/*                          fprintf(stderr,"nick alias using file \"%s\"\n",value); */
+/*                     } */
+/* #ifdef __WIN32__ */
+/*                     fprintf(stderr,"no support for nickfile in WIN32 version\n"); */
+/* #else */
+/*                     parse_nick(value); */
+/* #endif */
+/*                } */
                else if (strcmp("photofile",keyword)==0) {
                     expand(value);
                     if (debug==2) {
                          fprintf(stderr,"parsing photo file \"%s\"\n",value);
                     }
                     parse_photo(value);
-               }
-               else if (strcmp("output",keyword)==0) {
-                    expand(value);
-                    if (debug==2) {
-                         fprintf(stderr,"generating xhtml file \"%s\"\n",value);
-                    }
-                    bestwords(words,0);
-                    if (L("CHARSET")=="KOI8-R") {
-                         bestruswords(ruswords,0);
-                    }
-                    gen_xhtml(value);
-        
-                    /* reset variables */
-                    nbusers=0;
-                    nburls=0;
-                    nbtopics=0;
-                    days=0;
-                    currwday=-1;
-                    currmon=-1;
-                    for (i=0;i<24*4;i++) {
-                         hours[i]=0;
-                    }
-                    lines=0;
-                    for (i=0;i<31;i++) {
-                         lastdays[i].lines=0;
-                         lastweeks[i].lines=0;
-                         lastmonths[i].lines=0;
-                         for (j=0;j<4;j++) {
-                              lastdays[i].hours[j]=0;
-                              lastweeks[i].hours[j]=0;
-                              lastmonths[i].hours[j]=0;
-                         }
-                    }
-                    freewords(&words);
-                    freeruswords(&ruswords);
-                    for (i=0;i<NBWORDS;i++) {
-                         topwords[i].nb=0;
-                    }
-                    totallines=0;
-                    debut=time(NULL);
-                    for (i=0;i<nbusers;i++) {
-                         free(users[i].photo);
-                         users[i].photo=NULL;
-                    }
                }
                else if (strcmp("top_words",keyword)==0) {
                     if (debug==2) {
@@ -2096,6 +2085,12 @@ void parse_config(char *configfile)
                          exit(1);
                     }
                }
+               else if (strcmp("nuserstable",keyword)==0) {
+                    if (debug==2) {
+                         fprintf(stderr,"setting nuserstable to \"%s\"\n",value);
+                    }
+                    conf_nuserstable = strtol(value, NULL, 10);
+               }
                else {
                     fprintf(stderr,"error in config file : \"%s\" is an unknown keyword (line %d)\n",keyword,configlines);
                     exit(1); 
@@ -2105,25 +2100,148 @@ void parse_config(char *configfile)
      fclose(fic);
 }
 
+/* resets all variables */
+void reset()
+{
+     int i,j;
+     
+     nbusers=0;
+     nburls=0;
+     nbtopics=0;
+     days=0;
+     currwday=-1;
+     currmon=-1;
+     for (i=0;i<24*4;i++) {
+          hours[i]=0;
+     }
+     lines=0;
+     for (i=0;i<31;i++) {
+          lastdays[i].lines=0;
+          lastweeks[i].lines=0;
+          lastmonths[i].lines=0;
+          for (j=0;j<4;j++) {
+               lastdays[i].hours[j]=0;
+               lastweeks[i].hours[j]=0;
+               lastmonths[i].hours[j]=0;
+          }
+     }
+     freewords(&words);
+     freeruswords(&ruswords);
+     for (i=0;i<NBWORDS;i++) {
+          topwords[i].nb=0;
+     }
+     totallines=0;
+     debut=time(NULL);
+     for (i=0;i<nbusers;i++) {
+          free(users[i].photo);
+          users[i].photo=NULL;
+     }
+}
+
 int main(int argc,char *argv[])
 {
+     int i,c,oi;
+     char *config_file = NULL, *output_file = NULL, *nick_file = NULL;
+
      (void) setlocale(LC_ALL, "");
      if ((users=malloc(maxusers*sizeof(struct user)))==NULL) {
           fprintf(stderr,"unable to malloc memory\n");
           exit(1);
      }
      srand(debut=time(NULL));
-     if (argc==1) {
-          parse_config(NULL);
-     }
-     else if (argc==2) {
-          parse_config(argv[1]);
-     }
-     else{
-          fprintf(stderr,"Usage : %s [/path/to/file.conf]\n",argv[0]);
-          fprintf(stderr,"Version : irssistats %s\n",VERSION);
-          exit(1);
-     }
-     return(0);
-}
 
+     /* parse options */
+     i = 0;
+     while ((c = getopt_long(argc, argv, "hc:n:o:sv",
+                             long_options, &oi)) != -1) {
+          
+          if (-1 == c) {
+               break;
+          }
+
+          if (opt_version) {
+               print_version();
+               return 0;
+          }
+           
+          switch (c) {
+          case 'h':
+               print_help();
+               return 0;
+          case 's':
+               debug = 0;
+               break;
+          case 'v':
+               debug = 2;
+               break;
+          case 'c':
+               config_file = optarg;
+               break;
+          case 'n':
+               nick_file = optarg;
+               break;
+          case 'o':
+               output_file = optarg;
+               break;
+          default:
+               return 1;
+          }
+     }
+
+     if (!output_file) {
+          printf("An output filename must be given with -o.\n");
+          print_help();
+          return 1;
+     }
+     if (optind == argc) {
+          printf("At least one input file must be given.\n");
+          print_help();
+          return 1;
+     }
+     
+     if (debug) {
+          if (config_file) {
+               printf("Using config file: %s\n", config_file);
+          }
+          if (output_file) {
+               printf("Output file: %s\n", output_file);
+          }
+     }
+
+     if (2 == debug) {
+          printf("Input filenames:\n");
+          for (i = optind; i < argc; ++i) {
+               printf("%s\n", argv[i]);
+          }
+     }
+
+     if (config_file) {
+          parse_config(config_file);
+     }
+
+     for (i = optind; i < argc; ++i) {
+          parse_log(argv[i]);
+     }
+
+     if (nick_file) {
+          parse_nick(nick_file);
+     }
+
+     bestwords(words,0);
+     if (L("CHARSET")=="KOI8-R") bestruswords(ruswords,0);
+     gen_xhtml(output_file);
+     
+     /* if (argc==1) { */
+     /*      parse_config(NULL); */
+     /* } */
+     /* else if (argc==2) { */
+     /*      parse_config(argv[1]); */
+     /* } */
+     /* else{ */
+     /*      fprintf(stderr,"Usage : %s [/path/to/file.conf]\n",argv[0]); */
+     /*      fprintf(stderr,"Version : irssistats %s\n",VERSION); */
+     /*      exit(1); */
+     /* } */
+
+     return 0;
+}
