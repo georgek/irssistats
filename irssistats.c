@@ -893,9 +893,9 @@ int dichotomic(char *nick)
      if (strcmp(nick,users[start].nick)!=0) {
           nbusers++;
           if (nbusers>=maxusers) {
-               maxusers+=BASEUSERS;
+               maxusers = maxusers << 1;
                if (debug==2) {
-                    fprintf(stderr,"allocating more users : %d\n",maxusers);
+                    fprintf(stderr,"*** Allocating more users : %d\n",maxusers);
                }
                if ((users=realloc(users,maxusers*sizeof(struct user)))==NULL) {
                     fprintf(stderr,
@@ -1013,7 +1013,7 @@ void parse_log(char *logfile)
      FILE *fic;
      char line[MAXLINELENGTH];
      int pos;
-     int i,j;
+     int i,j,uid;
      char *nick,*message;
      int nickstart;
      int mononick=-1,monolines=0;
@@ -1082,7 +1082,8 @@ void parse_log(char *logfile)
                     /* 00:00 -!- mode/#channel [...] by (Nick, Nick2, )Nick3 */
                     for (i=strlen(line);line[i]!=' ';i--);
                     nick=&line[i+1];
-                    users[dichotomic(nick)].counters[D_MODE]++;
+                    uid = dichotomic(nick);
+                    users[uid].counters[D_MODE]++;
                }
                else if (strncmp("-!-",&line[timelen],3)==0) {
                     /* 00:00 -!- Nick something... */
@@ -1102,7 +1103,8 @@ void parse_log(char *logfile)
                     if (strncmp("changed the topic of",message,20)==0) {
                          /* 00:00 -!- Nick changed the topic of #channel to:
                           * new topic */
-                         users[dichotomic(nick)].counters[D_TOPIC]++;
+                         uid = dichotomic(nick);
+                         users[uid].counters[D_TOPIC]++;
                          for (i=21;message[i]!=':';i++);
                          message=&message[i+2];
                          nbtopics++;
@@ -1116,16 +1118,19 @@ void parse_log(char *logfile)
                     else if (strncmp("was kicked from",message,15)==0) {
                          /* 00:00 -!- Nick was kicked from #channel by Nick
                           * [Reason] */
-                         users[dichotomic(nick)].counters[D_KICKED]++;
+                         uid = dichotomic(nick);
+                         users[uid].counters[D_KICKED]++;
                          for (i=16;message[i]!=' ';i++);
                          message=&message[i+4];
                          for (i=0;message[i]!=' ';i++);
                          message[i]='\0';
-                         users[dichotomic(message)].counters[D_KICK]++;
+                         uid = dichotomic(message);
+                         users[uid].counters[D_KICK]++;
                     }
                     else if (strncmp("is now known as",message,15)==0) {
                          /* 00:00 -!- Nick is now known as Nick */
-                         users[dichotomic(nick)].counters[D_NICK]++;
+                         uid = dichotomic(nick);
+                         users[uid].counters[D_NICK]++;
                     }
                     else if (message[0]=='[') {
                          /* 00:00 -!- Nick [user@host] something... */
@@ -1134,7 +1139,8 @@ void parse_log(char *logfile)
                          if (strncmp("has joined",message,10)==0) {
                               /* 00:00 -!- Nick [user@host] has joined
                                * #channel */
-                              users[dichotomic(nick)].counters[D_JOIN]++;
+                              uid = dichotomic(nick);
+                              users[uid].counters[D_JOIN]++;
                          }
                          else if (strncmp("has quit",message,8)==0);
                          /* 00:00 -!- Nick [user@host] has quit [Reason] */
