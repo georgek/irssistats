@@ -657,6 +657,7 @@ struct user
 {
      char nick[MAXNICKLENGTH];
      int lines;
+     int cached_lines;
      int words;
      int letters;
      int hours[4];
@@ -944,6 +945,7 @@ int dichotomic(char *nick)
           for (i=nbusers-1;i>start;i--) {
                strcpy(users[i].nick,users[i-1].nick);
                users[i].lines=users[i-1].lines;
+               users[i].cached_lines=users[i-1].cached_lines;
                users[i].words=users[i-1].words;
                users[i].letters=users[i-1].letters;
                for (j=0;j<4;j++) {
@@ -958,6 +960,7 @@ int dichotomic(char *nick)
           }
           strcpy(users[start].nick,nick);
           users[start].lines=0;
+          users[start].cached_lines=0;
           users[start].words=0;
           users[start].letters=0;
           for (j=0;j<4;j++) {
@@ -1051,7 +1054,7 @@ void parse_log(char *logfile)
      FILE *fic;
      char line[MAXLINELENGTH];
      int pos;
-     int i,j,uid;
+     int i,j,uid,l;
      char *nick,*message;
      int nickstart;
      int mononick=-1,monolines=0;
@@ -1337,7 +1340,9 @@ void parse_log(char *logfile)
                     /* Fetch a random message, messages between 25 and 70
                      * chars are preferred (pisg-style, gets "better"
                      * quotes)*/
-                    if (rand()%users[i].lines==0) {
+                    l = users[i].lines - users[i].cached_lines;
+                    l = l > 10000 ? 10000 : l;
+                    if (rand() % l==0) {
                          int len = strlen(message);
                          /* if we have a "good" quote, use it */
                          if ( len > 25 && len < 70 ) {
@@ -2277,6 +2282,7 @@ void unserialise(FILE *fp)
                  &users[i].words, &users[i].letters,
                  &users[i].hours[0], &users[i].hours[1],
                  &users[i].hours[2], &users[i].hours[3]);
+          users[i].cached_lines = users[i].lines;
           getc(fp);
           j = 0;
           while ((c = getc(fp)) != '\n') {
