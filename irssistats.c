@@ -689,6 +689,7 @@ struct
      int hours[4];
 } lastdays[31], lastweeks[31], lastmonths[31];
 int days=0;
+char firstday[16];
 char currday[16];
 int currwday=-1, currmon=-1;
 
@@ -1095,6 +1096,9 @@ void parse_log(char *logfile)
                     fprintf(stderr, "log %s opened, ", logfile);
                }
                day_changed(line+15);
+               if (firstday[0] == 0) {
+                    memcpy(firstday, currday, 16);
+               }
           }
           if (strncmp("--- Day changed",line,15)==0) {
                /* --- Day changed Wed May 01 2002 */
@@ -1102,6 +1106,9 @@ void parse_log(char *logfile)
                     fprintf(stderr, "within log file, ");
                }
                day_changed(line+16);
+               if (firstday[0] == 0) {
+                    memcpy(firstday, currday, 16);
+               }
           }
           else {
                /* timelen is number of characters occupied by time
@@ -1804,6 +1811,7 @@ void gen_xhtml(char *xhtmlfile)
      /* footer */
      fprintf(fic,"<div id=\"irssistats_footer\">\n<p>");
      fprintf(fic,L("TIME"),totallines,days+1,(int)(time(NULL)-debut));
+     fprintf(fic,"</p>\n<p>(%s - %s)",firstday,currday);
      fprintf(fic,"</p>\n<p>%s <a href=\"%s\">irssistats %s</a></p>\n",L("FOOTER"),URL,VERSION);
      if (w3c_link) {
           fprintf(fic,"<p>\n<a href=\"http://validator.w3.org/check/referer\"><img src=\"valid-xhtml10.png\" height=\"31\" width=\"88\" alt=\"Valid XHTML 1.0!\" /></a>\n");
@@ -2231,7 +2239,7 @@ void serialise(FILE *fp)
                   lastmonths[i].hours[1],
                   lastmonths[i].hours[2], lastmonths[i].hours[3]);
      }
-     fprintf(fp, "%d\n%s\n%d,%d\n", days,currday,currwday,currmon);
+     fprintf(fp, "%d\n%s\n%s\n%d,%d\n", days,firstday,currday,currwday,currmon);
 
      for (i = 0; i < 24*4; ++i) {
           fprintf(fp, "%d,", hours[i]);
@@ -2296,6 +2304,11 @@ void unserialise(FILE *fp)
                   &lastmonths[i].hours[2], &lastmonths[i].hours[3]);
      }
      fscanf(fp, "%d\n", &days);
+     for (i = 0; i < 15; ++i) {
+          firstday[i] = getc(fp);
+     }
+     fgetc(fp);
+     firstday[i] = '\0';
      for (i = 0; i < 15; ++i) {
           currday[i] = getc(fp);
      }
@@ -2402,6 +2415,7 @@ int main(int argc,char *argv[])
           }
      }
 
+     firstday[0] = 0;
      if (cache_in) {
           serial = fopen(cache_in, "r");
           unserialise(serial);
