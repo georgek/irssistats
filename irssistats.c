@@ -717,7 +717,6 @@ struct rusletter
 
 #define isletter(c) (((c>='a')&&(c<='z'))||((c>='A')&&(c<='Z')))
 #define lowercase(c) (((c>='A')&&(c<='Z'))?c-'A'+'a':c)
-//#define lowercase(c) (c | 0x20)
 #define isrusletter(c) (memchr(koi,c,66)==NULL?0:1)
 
 const char koi[] = {
@@ -752,7 +751,6 @@ int lowruscase(char c)
 int findruswords(char *message)
 {
      int i,c,n=0;
-     //char *tmp_p;
      struct rusletter *pos,*tmp;
      for (;;) {
           while (!isrusletter(*message)) {

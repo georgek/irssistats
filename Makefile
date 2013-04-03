@@ -3,7 +3,7 @@ BIN = $(PRE)/bin
 DAT = $(PRE)/share/irssistats/data
 DOC = $(PRE)/share/doc/irssistats
 MAN = $(PRE)/share/man/man1
-CFLAGS ?= -O2
+CFLAGS ?= -O2 -g -ansi
 
 irssistats:irssistats.c
 	gcc $(CFLAGS) -o irssistats irssistats.c
