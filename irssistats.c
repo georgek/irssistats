@@ -2162,18 +2162,17 @@ void reset()
 
 void serialise_words(FILE *fp, struct letter *node)
 {
-     int i, pack = 0;
+     int i, f[2] = {node->nb, 0};
      
-     fprintf(fp, "%d,", node->nb);
      /* pack 26 bits into a word, bit n will be set if node->next[n] is
       * non-NULL */
      for (i = 25; i >= 0; --i) {
-          pack = pack << 1;
+          f[1] = f[1] << 1;
           if (node->next[i]) {
-               pack |= 1;
+               f[1] |= 1;
           }
      }
-     fprintf(fp, "%d\n", pack);
+     fwrite(f, sizeof(int), 2, fp);
 
      for (i = 0; i < 26; ++i) {
           if (node->next[i]) {
@@ -2185,21 +2184,20 @@ void serialise_words(FILE *fp, struct letter *node)
 struct letter *unserialise_words(FILE *fp)
 {
      struct letter *node = malloc(sizeof(struct letter));
-     char line[MAXLINELENGTH];
-     int i, n, pack;
+     int i, f[2];
 
-     if (fgets(line, MAXLINELENGTH, fp) == NULL){
-          return;
+     if (2 != (fread(f, sizeof(int), 2, fp))) {
+          fprintf(stderr, "Error reading cache file.\n");
      }
-     sscanf(line, "%d,%d\n", &(node->nb), &pack);
+     node->nb = f[0];
      for (i = 0; i < 26; ++i) {
-          if (pack & 1) {
+          if (f[1] & 1) {
                node->next[i] = unserialise_words(fp);
           }
           else {
                node->next[i] = NULL;
           }
-          pack = pack >> 1;
+          f[1] = f[1] >> 1;
      }
      return node;
 }
@@ -2207,49 +2205,92 @@ struct letter *unserialise_words(FILE *fp)
 void serialise(FILE *fp)
 {
      int i,j;
-     
-     fprintf(fp,
-             "%d\n%s\n%s\n%s\n%d\n%d\n%d\n%s\n%s\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n"
-             "%d\n%d\n%d\n%d\n%d\n", language, channel, maintainer, theme,
-             refresh_time, w3c_link, logo, header, footer, totallines,
+     int settings[16] = {language, refresh_time, w3c_link, logo, totallines,
              top_words, ranking, quarter, months, weeks, photo_size,
              conf_nuserstable, conf_nuserstime, conf_nurls, conf_ntopics,
-             conf_nwords);
+             conf_nwords};
+     char *settings_strs[5] = {channel, maintainer, theme, header, footer};
+
+     int users_n[2] = {maxusers, nbusers};
+     int user_n[8 + NBCOUNTERS];
+     char *user_nick, *user_quote;
+
+     int *last_n, *lnp;
+     int days_n[3] = {days, currwday, currmon};
+     char *days_fday, *days_currday;
+
+     fwrite(settings, sizeof(int), 16, fp);
+     for (i = 0; i < 5; ++i) {
+          while ('\0' != *settings_strs[i]) {
+               fputc(*settings_strs[i]++, fp);
+          }
+          fputc('\n', fp);
+     }
 
      /* users */
-     fprintf(fp, "%d\n%d\n", maxusers, nbusers);
+     fwrite(users_n, sizeof(int), 2, fp);
      for (i = 0; i < nbusers; ++i) {
-          fprintf(fp, "%s\n%d,%d,%d,%d,%d,%d,%d\n",
-                  users[i].nick, users[i].lines,
-                  users[i].words, users[i].letters,
-                  users[i].hours[0], users[i].hours[1],
-                  users[i].hours[2], users[i].hours[3]);
-          fprintf(fp, "%s\n", users[i].quote);
-          for (j = 0; j < NBCOUNTERS; ++j) {
-               fprintf(fp, "%d,", users[i].counters[j]);
+          user_nick = users[i].nick;
+          user_quote = users[i].quote;
+          while ('\0' != *user_nick) {
+               fputc(*user_nick++, fp);
           }
-          fprintf(fp, "%d\n", users[i].temp);
+          fputc('\n', fp);
+          while ('\0' != *user_quote) {
+               fputc(*user_quote++, fp);
+          }
+          fputc('\n', fp);
+
+          user_n[0] = users[i].lines;
+          user_n[1] = users[i].words;
+          user_n[2] = users[i].letters;
+          user_n[3] = users[i].hours[0];
+          user_n[4] = users[i].hours[1];
+          user_n[5] = users[i].hours[2];
+          user_n[6] = users[i].hours[3];
+          user_n[7] = users[i].temp;
+          for (j = 0; j < NBCOUNTERS; ++j) {
+               user_n[8+j] = users[i].counters[j];
+          }
+          fwrite(user_n, sizeof(int), 8 + NBCOUNTERS, fp);
      }
 
      /* days */
+     last_n = malloc(sizeof(int) * (15*31));
+     lnp = last_n;
      for (i = 0; i < 31; ++i) {
-          fprintf(fp, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
-                  lastdays[i].lines, lastdays[i].hours[0],
-                  lastdays[i].hours[1],
-                  lastdays[i].hours[2], lastdays[i].hours[3],
-                  lastweeks[i].lines, lastweeks[i].hours[0],
-                  lastweeks[i].hours[1],
-                  lastweeks[i].hours[2], lastweeks[i].hours[3],
-                  lastmonths[i].lines, lastmonths[i].hours[0],
-                  lastmonths[i].hours[1],
-                  lastmonths[i].hours[2], lastmonths[i].hours[3]);
+          *lnp++ = lastdays[i].lines;
+          *lnp++ = lastdays[i].hours[0];
+          *lnp++ = lastdays[i].hours[1];
+          *lnp++ = lastdays[i].hours[2];
+          *lnp++ = lastdays[i].hours[3];
+          *lnp++ = lastweeks[i].lines;
+          *lnp++ = lastweeks[i].hours[0];
+          *lnp++ = lastweeks[i].hours[1];
+          *lnp++ = lastweeks[i].hours[2];
+          *lnp++ = lastweeks[i].hours[3];
+          *lnp++ = lastmonths[i].lines;
+          *lnp++ = lastmonths[i].hours[0];
+          *lnp++ = lastmonths[i].hours[1];
+          *lnp++ = lastmonths[i].hours[2];
+          *lnp++ = lastmonths[i].hours[3];
      }
-     fprintf(fp, "%d\n%s\n%s\n%d,%d\n", days,firstday,currday,currwday,currmon);
+     fwrite(last_n, sizeof(int), 15*31, fp);
+     free(last_n);
+     fwrite(days_n, sizeof(int), 3, fp);
+     days_fday = firstday;
+     days_currday = currday;
+     while ('\0' != *days_fday) {
+          fputc(*days_fday++, fp);
+     }
+     fputc('\n', fp);
+     while ('\0' != *days_currday) {
+          fputc(*days_currday++, fp);
+     }
+     fputc('\n', fp);
 
-     for (i = 0; i < 24*4; ++i) {
-          fprintf(fp, "%d,", hours[i]);
-     }
-     fprintf(fp, "%d\n", lines);
+     fwrite(hours, sizeof(int), 24*4, fp);
+     fwrite(&lines, sizeof(int), 1, fp);
 
      serialise_words(fp, &words);
 }
@@ -2258,76 +2299,124 @@ void unserialise(FILE *fp)
 {
      int i,j;
      char c;
-     
-     fscanf(fp,
-            "%d\n%s\n%s\n%s\n%d\n%d\n%d\n%s\n%s\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n"
-            "%d\n%d\n%d\n%d\n%d\n", &language, channel, maintainer, theme,
-            &refresh_time, &w3c_link, &logo, header, footer, &totallines,
-            &top_words, &ranking, &quarter, &months, &weeks, &photo_size,
-            &conf_nuserstable, &conf_nuserstime, &conf_nurls, &conf_ntopics,
-            &conf_nwords);
+     int settings[16];
+     int *settings_ptrs[16] = {&language, &refresh_time, &w3c_link, &logo,
+                               &totallines, &top_words, &ranking, &quarter,
+                               &months, &weeks, &photo_size, &conf_nuserstable,
+                               &conf_nuserstime, &conf_nurls, &conf_ntopics,
+                               &conf_nwords};
+     char *settings_strs[5] = {channel, maintainer, theme, header, footer};
 
-     fscanf(fp, "%d\n%d", &maxusers, &nbusers);
-     getc(fp);
+     int users_n[2];
+     int user_n[8 + NBCOUNTERS];
+     char *user_nick, *user_quote;
+
+     int *last_n, *lnp;
+     int days_n[3];
+     char *days_fday, *days_currday;
+
+     struct letter *wds;
+
+     if (16 != (fread(settings, sizeof(int), 16, fp))) {
+          fprintf(stderr, "Error reading cache file.\n");
+     }
+     for (i = 0; i < 16; ++i) {
+          *settings_ptrs[i] = settings[i];
+     }
+     for (i = 0; i < 5; ++i) {
+          while ('\n' != (c = fgetc(fp))) {
+               *settings_strs[i]++ = c;
+          }
+          *settings_strs[i] = '\0';
+     }
+
+     /* users */
+     if (2 != (fread(users_n, sizeof(int), 2, fp))) {
+          fprintf(stderr, "Error reading cache file.\n");
+     }
+     maxusers = users_n[0];
+     nbusers = users_n[1];
      users = realloc(users,sizeof(struct user) * maxusers);
      for (i = 0; i < nbusers; ++i) {
-          j = 0;
-          while ((c = getc(fp)) != '\n') {
-               users[i].nick[j] = c;
-               ++j;
+          user_nick = users[i].nick;
+          user_quote = users[i].quote;
+          while ('\n' != (c = fgetc(fp))) {
+               *user_nick++ = c;
           }
-          users[i].nick[j] = '\0';
-          fscanf(fp, "%d,%d,%d,%d,%d,%d,%d",
-                 &users[i].lines,
-                 &users[i].words, &users[i].letters,
-                 &users[i].hours[0], &users[i].hours[1],
-                 &users[i].hours[2], &users[i].hours[3]);
-          users[i].cached_lines = users[i].lines;
-          getc(fp);
-          j = 0;
-          while ((c = getc(fp)) != '\n') {
-               users[i].quote[j] = c;
-               ++j;
+          *user_nick = '\0';
+          while ('\n' != (c = fgetc(fp))) {
+               *user_quote++ = c;
           }
-          users[i].quote[j] = '\0';
+          *user_quote = '\0';
+
+          if (8+NBCOUNTERS
+              != (fread(user_n, sizeof(int), 8 + NBCOUNTERS, fp))) {
+               fprintf(stderr, "Error reading cache file.\n");
+          }
+          users[i].lines = user_n[0];
+          users[i].words = user_n[1];
+          users[i].letters = user_n[2];
+          users[i].hours[0] = user_n[3];
+          users[i].hours[1] = user_n[4];
+          users[i].hours[2] = user_n[5];
+          users[i].hours[3] = user_n[6];
+          users[i].temp = user_n[7];
           for (j = 0; j < NBCOUNTERS; ++j) {
-               fscanf(fp, "%d,", &users[i].counters[j]);
+               users[i].counters[j] = user_n[8+j];
           }
-          users[i].photo = NULL;
-          fscanf(fp, "%d\n", &users[i].temp);
      }
 
+     /* days */
+     last_n = malloc(sizeof(int) * (15*31));
+     lnp = last_n;
+     if (15*31 != (fread(last_n, sizeof(int), 15*31, fp))) {
+          fprintf(stderr, "Error reading cache file.\n");
+     }
      for (i = 0; i < 31; ++i) {
-          fscanf(fp, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
-                  &lastdays[i].lines, &lastdays[i].hours[0],
-                  &lastdays[i].hours[1],
-                  &lastdays[i].hours[2], &lastdays[i].hours[3],
-                  &lastweeks[i].lines, &lastweeks[i].hours[0],
-                  &lastweeks[i].hours[1],
-                  &lastweeks[i].hours[2], &lastweeks[i].hours[3],
-                  &lastmonths[i].lines, &lastmonths[i].hours[0],
-                  &lastmonths[i].hours[1],
-                  &lastmonths[i].hours[2], &lastmonths[i].hours[3]);
+          lastdays[i].lines = *lnp++;
+          lastdays[i].hours[0] = *lnp++;
+          lastdays[i].hours[1] = *lnp++;
+          lastdays[i].hours[2] = *lnp++;
+          lastdays[i].hours[3] = *lnp++;
+          lastweeks[i].lines = *lnp++;
+          lastweeks[i].hours[0] = *lnp++;
+          lastweeks[i].hours[1] = *lnp++;
+          lastweeks[i].hours[2] = *lnp++;
+          lastweeks[i].hours[3] = *lnp++;
+          lastmonths[i].lines = *lnp++;
+          lastmonths[i].hours[0] = *lnp++;
+          lastmonths[i].hours[1] = *lnp++;
+          lastmonths[i].hours[2] = *lnp++;
+          lastmonths[i].hours[3] = *lnp++;
      }
-     fscanf(fp, "%d\n", &days);
-     for (i = 0; i < 15; ++i) {
-          firstday[i] = getc(fp);
+     free(last_n);
+     if (3 != (fread(days_n, sizeof(int), 3, fp))) {
+          fprintf(stderr, "Error reading cache file.\n");
      }
-     fgetc(fp);
-     firstday[i] = '\0';
-     for (i = 0; i < 15; ++i) {
-          currday[i] = getc(fp);
+     days = days_n[0];
+     currwday = days_n[1];
+     currmon = days_n[2];
+     days_fday = firstday;
+     days_currday = currday;
+     while ('\n' != (c = fgetc(fp))) {
+          *days_fday++ = c;
      }
-     fgetc(fp);
-     currday[i] = '\0';
-     fscanf(fp, "%d,%d\n", &currwday,&currmon);
+     *days_fday = '\0';
+     while ('\n' != (c = fgetc(fp))) {
+          *days_currday++ = c;
+     }
+     *days_currday = '\0';
 
-     for (i = 0; i < 24*4; ++i) {
-          fscanf(fp, "%d,", &hours[i]);
+     if (24*4 != (fread(hours, sizeof(int), 24*4, fp))) {
+          fprintf(stderr, "Error reading cache file.\n");
      }
-     fscanf(fp, "%d\n", &lines);
+     if (1 != (fread(&lines, sizeof(int), 1, fp))) {
+          fprintf(stderr, "Error reading cache file.\n");
+     }
 
-     words = *unserialise_words(fp);
+     wds = unserialise_words(fp);
+     words = *wds;
+     free(wds);
 }
 
 int main(int argc,char *argv[])
