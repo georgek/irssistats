@@ -689,6 +689,7 @@ struct
      int lines;
      int hours[4];
 } lastdays[31], lastweeks[31], lastmonths[31];
+int zerodayi = 0, zeroweeki = 0, zeromonthi = 0;
 int days=0;
 char firstday[16];
 char currday[16];
@@ -991,15 +992,16 @@ void day_changed(char* date)
      if (memcmp(currday, newday, 15)!=0) {
           /* we do not have a "current" day yet? */
           if (currday[0]!=0) {
-               for (i=30;i>0;i--) {
-                    lastdays[i].lines=lastdays[i-1].lines;
-                    for (j=0;j<4;j++) {
-                         lastdays[i].hours[j]=lastdays[i-1].hours[j];
-                    }
-               }
-               lastdays[0].lines=0;
+               /* for (i=30;i>0;i--) { */
+               /*      lastdays[i].lines=lastdays[i-1].lines; */
+               /*      for (j=0;j<4;j++) { */
+               /*           lastdays[i].hours[j]=lastdays[i-1].hours[j]; */
+               /*      } */
+               /* } */
+               zerodayi = (zerodayi + 1) % 31;
+               lastdays[zerodayi].lines=0;
                for (j=0;j<4;j++) {
-                    lastdays[0].hours[j]=0;
+                    lastdays[zerodayi].hours[j]=0;
                }
                days++;
           }
@@ -1011,28 +1013,30 @@ void day_changed(char* date)
           if (strptime(currday, "%a %b %d %Y", &currdate)) {
                /* each monday we change the week number */
                if (currdate.tm_wday == 1) {
-                    for (i=30;i>0;i--) {
-                         lastweeks[i].lines=lastweeks[i-1].lines;
-                         for (j=0;j<4;j++) {
-                              lastweeks[i].hours[j]=lastweeks[i-1].hours[j];
-                         }
-                    }
-                    lastweeks[0].lines=0;
+                    /* for (i=30;i>0;i--) { */
+                    /*      lastweeks[i].lines=lastweeks[i-1].lines; */
+                    /*      for (j=0;j<4;j++) { */
+                    /*           lastweeks[i].hours[j]=lastweeks[i-1].hours[j]; */
+                    /*      } */
+                    /* } */
+                    zeroweeki = (zeroweeki + 1) % 31;
+                    lastweeks[zeroweeki].lines=0;
                     for (j=0;j<4;j++) {
-                         lastweeks[0].hours[j]=0;
+                         lastweeks[zeroweeki].hours[j]=0;
                     }
                }
                /* if the month has changed */
                if (currdate.tm_mon != currmon && currmon >= 0) {
-                    for (i=30;i>0;i--) {
-                         lastmonths[i].lines=lastmonths[i-1].lines;
-                         for (j=0;j<4;j++) {
-                              lastmonths[i].hours[j]=lastmonths[i-1].hours[j];
-                         }
-                    }
-                    lastmonths[0].lines=0;
+                    /* for (i=30;i>0;i--) { */
+                    /*      lastmonths[i].lines=lastmonths[i-1].lines; */
+                    /*      for (j=0;j<4;j++) { */
+                    /*           lastmonths[i].hours[j]=lastmonths[i-1].hours[j]; */
+                    /*      } */
+                    /* } */
+                    zeromonthi = (zeromonthi + 1) % 31;
+                    lastmonths[zeromonthi].lines=0;
                     for (j=0;j<4;j++) {
-                         lastmonths[0].hours[j]=0;
+                         lastmonths[zeromonthi].hours[j]=0;
                     }
                }
                currwday = currdate.tm_wday;
@@ -1309,12 +1313,12 @@ void parse_log(char *logfile)
                     }
                     users[i].letters+=j;
                     users[i].hours[hour/6]++;
-                    lastdays[0].lines++;
-                    lastdays[0].hours[hour/6]++;
-                    lastweeks[0].lines++;
-                    lastweeks[0].hours[hour/6]++;
-                    lastmonths[0].lines++;
-                    lastmonths[0].hours[hour/6]++;
+                    lastdays[zerodayi].lines++;
+                    lastdays[zerodayi].hours[hour/6]++;
+                    lastweeks[zeroweeki].lines++;
+                    lastweeks[zeroweeki].hours[hour/6]++;
+                    lastmonths[zeromonthi].lines++;
+                    lastmonths[zeromonthi].hours[hour/6]++;
                     lines++;
                     if (quarter) {
                          line[5]='\0';
@@ -1535,12 +1539,16 @@ void gen_xhtml(char *xhtmlfile)
           /* last months */
           fprintf(fic,"<div id=\"irssistats_lastmonths\">\n<h2>%s</h2>\n<table>\n<tr>\n",L("LASTMONTHS"));
           max=-1;
-          for (i=30;i>=0;i--) {
+          i = zeromonthi;
+          do {
+               i = (i+1)%31;
                if (lastmonths[i].lines>max) {
                     max=lastmonths[i].lines;
                }
-          }
-          for (i=30;i>=0;i--) {
+          } while (i != zeromonthi);
+          /* i = zeromonthi; */
+          do {
+               i = (i+1)%31;
                fprintf(fic,"<td align=\"center\" valign=\"bottom\"><small>%d</small>",lastmonths[i].lines);
                for (j=0;j<4;j++) {
                     if (lastmonths[i].hours[j]!=0) {
@@ -1548,7 +1556,7 @@ void gen_xhtml(char *xhtmlfile)
                     }
                }
                fprintf(fic,"</td>\n");
-          }
+          } while (i != zeromonthi);
           fprintf(fic,"</tr>\n<tr>\n");
           for (i=30;i>=0;i--) {
                fprintf(fic,"<th>%d</th>\n",i);
@@ -1560,12 +1568,16 @@ void gen_xhtml(char *xhtmlfile)
           /* last weeks */
           fprintf(fic,"<div id=\"irssistats_lastweeks\">\n<h2>%s</h2>\n<table>\n<tr>\n",L("LASTWEEKS"));
           max=-1;
-          for (i=30;i>=0;i--) {
+          i = zeroweeki;
+          do {
+               i = (i+1)%31;
                if (lastweeks[i].lines>max) {
                     max=lastweeks[i].lines;
                }
-          }
-          for (i=30;i>=0;i--) {
+          } while (i != zeroweeki);
+          /* i = zeroweeki; */
+          do {
+               i = (i+1)%31;
                fprintf(fic,"<td align=\"center\" valign=\"bottom\"><small>%d</small>",lastweeks[i].lines);
                for (j=0;j<4;j++) {
                     if (lastweeks[i].hours[j]!=0) {
@@ -1573,7 +1585,7 @@ void gen_xhtml(char *xhtmlfile)
                     }
                }
                fprintf(fic,"</td>\n");
-          }
+          } while (i != zeroweeki);
           fprintf(fic,"</tr>\n<tr>\n");
           for (i=30;i>=0;i--) {
                fprintf(fic,"<th>%d</th>\n",i);
@@ -1584,12 +1596,16 @@ void gen_xhtml(char *xhtmlfile)
      /* last days */
      fprintf(fic,"<div id=\"irssistats_lastdays\">\n<h2>%s</h2>\n<table>\n<tr>\n",L("LASTDAYS"));
      max=-1;
-     for (i=30;i>=0;i--) {
+     i = zerodayi;
+     do {
+          i = (i+1)%31;
           if (lastdays[i].lines>max) {
                max=lastdays[i].lines;
           }
-     }
-     for (i=30;i>=0;i--) {
+     } while (i != zerodayi);
+     /* i = zerodayi; */
+     do {
+          i = (i+1)%31;
           fprintf(fic,"<td align=\"center\" valign=\"bottom\"><small>%d</small>",lastdays[i].lines);
           for (j=0;j<4;j++) {
                if (lastdays[i].hours[j]!=0) {
@@ -1597,7 +1613,7 @@ void gen_xhtml(char *xhtmlfile)
                }
           }
           fprintf(fic,"</td>\n");
-     }
+     } while (i != zerodayi);
      fprintf(fic,"</tr>\n<tr>\n");
      for (i=30;i>=0;i--) {
           fprintf(fic,"<th>%d</th>\n",i);
@@ -2214,7 +2230,8 @@ void serialise(FILE *fp)
      char *user_nick, *user_quote;
 
      int *last_n, *lnp;
-     int days_n[3] = {days, currwday, currmon};
+     int days_n[6] = {zerodayi, zeroweeki, zeromonthi,
+                      days, currwday, currmon};
      char *days_fday, *days_currday;
 
      fwrite(settings, sizeof(int), 16, fp);
@@ -2275,7 +2292,7 @@ void serialise(FILE *fp)
      }
      fwrite(last_n, sizeof(int), 15*31, fp);
      free(last_n);
-     fwrite(days_n, sizeof(int), 3, fp);
+     fwrite(days_n, sizeof(int), 6, fp);
      days_fday = firstday;
      days_currday = currday;
      while ('\0' != *days_fday) {
@@ -2310,7 +2327,7 @@ void unserialise(FILE *fp)
      char *user_nick, *user_quote;
 
      int *last_n, *lnp;
-     int days_n[3];
+     int days_n[6];
      char *days_fday, *days_currday;
 
      struct letter *wds;
@@ -2388,12 +2405,15 @@ void unserialise(FILE *fp)
           lastmonths[i].hours[3] = *lnp++;
      }
      free(last_n);
-     if (3 != (fread(days_n, sizeof(int), 3, fp))) {
+     if (6 != (fread(days_n, sizeof(int), 6, fp))) {
           fprintf(stderr, "Error reading cache file.\n");
      }
-     days = days_n[0];
-     currwday = days_n[1];
-     currmon = days_n[2];
+     zerodayi = days_n[0];
+     zeroweeki = days_n[1];
+     zeromonthi = days_n[2];
+     days = days_n[3];
+     currwday = days_n[4];
+     currmon = days_n[5];
      days_fday = firstday;
      days_currday = currday;
      while ('\n' != (c = fgetc(fp))) {
@@ -2532,7 +2552,11 @@ int main(int argc,char *argv[])
           fprintf(stderr,"unable to malloc memory\n");
           exit(1);
      }
-     
+
+     words = malloc(sizeof(struct letter)*max_words);
+     for (i = 0; i < 26; ++i) {
+          words[0].next = -1;
+     }
      for (i = optind; i < argc; ++i) {
           parse_log(argv[i]);
      }
