@@ -2553,10 +2553,6 @@ int main(int argc,char *argv[])
           exit(1);
      }
 
-     words = malloc(sizeof(struct letter)*max_words);
-     for (i = 0; i < 26; ++i) {
-          words[0].next = -1;
-     }
      for (i = optind; i < argc; ++i) {
           parse_log(argv[i]);
      }
