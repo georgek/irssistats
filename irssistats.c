@@ -2186,7 +2186,10 @@ void serialise_words(FILE *fp, struct letter *node)
                f[1] |= 1;
           }
      }
-     fwrite(f, sizeof(int), 2, fp);
+     if (2 != fwrite(f, sizeof(int), 2, fp)) {
+          fprintf(stderr, "Error writing cache file.\n");
+          exit(1);
+     }
 
      for (i = 0; i < 26; ++i) {
           if (node->next[i]) {
@@ -2202,6 +2205,7 @@ struct letter *unserialise_words(FILE *fp)
 
      if (2 != (fread(f, sizeof(int), 2, fp))) {
           fprintf(stderr, "Error reading cache file.\n");
+          exit(1);
      }
      node->nb = f[0];
      for (i = 0; i < 26; ++i) {
@@ -2234,7 +2238,10 @@ void serialise(FILE *fp)
                       days, currwday, currmon};
      char *days_fday, *days_currday;
 
-     fwrite(settings, sizeof(int), 16, fp);
+     if (16 != fwrite(settings, sizeof(int), 16, fp)) {
+          fprintf(stderr, "Error writing cache file.\n");
+          exit(1);
+     }
      for (i = 0; i < 5; ++i) {
           while ('\0' != *settings_strs[i]) {
                fputc(*settings_strs[i]++, fp);
@@ -2243,7 +2250,10 @@ void serialise(FILE *fp)
      }
 
      /* users */
-     fwrite(users_n, sizeof(int), 2, fp);
+     if (2 != fwrite(users_n, sizeof(int), 2, fp)) {
+          fprintf(stderr, "Error writing cache file.\n");
+          exit(1);
+     }
      for (i = 0; i < nbusers; ++i) {
           user_nick = users[i].nick;
           user_quote = users[i].quote;
@@ -2267,7 +2277,11 @@ void serialise(FILE *fp)
           for (j = 0; j < NBCOUNTERS; ++j) {
                user_n[8+j] = users[i].counters[j];
           }
-          fwrite(user_n, sizeof(int), 8 + NBCOUNTERS, fp);
+          if ((8+NBCOUNTERS)
+              != fwrite(user_n, sizeof(int), 8 + NBCOUNTERS, fp)) {
+               fprintf(stderr, "Error writing cache file.\n");
+               exit(1);
+          }
      }
 
      /* days */
@@ -2290,9 +2304,15 @@ void serialise(FILE *fp)
           *lnp++ = lastmonths[i].hours[2];
           *lnp++ = lastmonths[i].hours[3];
      }
-     fwrite(last_n, sizeof(int), 15*31, fp);
+     if ((15*31) != fwrite(last_n, sizeof(int), 15*31, fp)) {
+          fprintf(stderr, "Error writing cache file.\n");
+          exit(1);
+     }
      free(last_n);
-     fwrite(days_n, sizeof(int), 6, fp);
+     if (6 != fwrite(days_n, sizeof(int), 6, fp)) {
+          fprintf(stderr, "Error writing cache file.\n");
+          exit(1);
+     }
      days_fday = firstday;
      days_currday = currday;
      while ('\0' != *days_fday) {
@@ -2304,8 +2324,14 @@ void serialise(FILE *fp)
      }
      fputc('\n', fp);
 
-     fwrite(hours, sizeof(int), 24*4, fp);
-     fwrite(&lines, sizeof(int), 1, fp);
+     if ((24*4) != fwrite(hours, sizeof(int), 24*4, fp)) {
+          fprintf(stderr, "Error writing cache file.\n");
+          exit(1);
+     }
+     if (1 != fwrite(&lines, sizeof(int), 1, fp)) {
+          fprintf(stderr, "Error writing cache file.\n");
+          exit(1);
+     }
 
      serialise_words(fp, &words);
 }
@@ -2334,6 +2360,7 @@ void unserialise(FILE *fp)
 
      if (16 != (fread(settings, sizeof(int), 16, fp))) {
           fprintf(stderr, "Error reading cache file.\n");
+          exit(1);
      }
      for (i = 0; i < 16; ++i) {
           *settings_ptrs[i] = settings[i];
@@ -2348,6 +2375,7 @@ void unserialise(FILE *fp)
      /* users */
      if (2 != (fread(users_n, sizeof(int), 2, fp))) {
           fprintf(stderr, "Error reading cache file.\n");
+          exit(1);
      }
      maxusers = users_n[0];
      nbusers = users_n[1];
@@ -2367,6 +2395,7 @@ void unserialise(FILE *fp)
           if (8+NBCOUNTERS
               != (fread(user_n, sizeof(int), 8 + NBCOUNTERS, fp))) {
                fprintf(stderr, "Error reading cache file.\n");
+               exit(1);
           }
           users[i].lines = user_n[0];
           users[i].words = user_n[1];
@@ -2386,6 +2415,7 @@ void unserialise(FILE *fp)
      lnp = last_n;
      if (15*31 != (fread(last_n, sizeof(int), 15*31, fp))) {
           fprintf(stderr, "Error reading cache file.\n");
+          exit(1);
      }
      for (i = 0; i < 31; ++i) {
           lastdays[i].lines = *lnp++;
@@ -2407,6 +2437,7 @@ void unserialise(FILE *fp)
      free(last_n);
      if (6 != (fread(days_n, sizeof(int), 6, fp))) {
           fprintf(stderr, "Error reading cache file.\n");
+          exit(1);
      }
      zerodayi = days_n[0];
      zeroweeki = days_n[1];
@@ -2427,9 +2458,11 @@ void unserialise(FILE *fp)
 
      if (24*4 != (fread(hours, sizeof(int), 24*4, fp))) {
           fprintf(stderr, "Error reading cache file.\n");
+          exit(1);
      }
      if (1 != (fread(&lines, sizeof(int), 1, fp))) {
           fprintf(stderr, "Error reading cache file.\n");
+          exit(1);
      }
 
      wds = unserialise_words(fp);
