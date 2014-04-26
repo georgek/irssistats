@@ -2398,6 +2398,7 @@ void unserialise(FILE *fp)
                exit(1);
           }
           users[i].lines = user_n[0];
+          users[i].cached_lines = user_n[0];
           users[i].words = user_n[1];
           users[i].letters = user_n[2];
           users[i].hours[0] = user_n[3];
